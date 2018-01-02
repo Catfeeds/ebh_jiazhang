@@ -252,4 +252,27 @@ abstract class CApplication {
 	return $this->_models[$modelname];
     }
 
+    /**
+     * @describe:获取apiService实例
+     * @Author:tzq
+     * @Date:2018-01-02
+     * @param string $name
+     * @return mixed
+     */
+    public function getApiServer($name='ebh'){
+        if(isset($this->_classes['apiserver_'.$name])){
+            return $this->_classes['apiserver_'.$name];
+        }
+        $apiserver = Ebh::app()->getConfig()->load('apiserver');
+        if(isset($apiserver[$name]) && !empty($apiserver[$name])){
+            $ebhClient = Ebh::app()->lib('EbhClient');
+
+            $ebhClient->init($apiserver[$name]['appid'],$apiserver[$name]['appsecret']);
+
+            $ebhClient->setHost($apiserver[$name]['host'])->setFilter(new FilterDemo($apiserver[$name]['appsecret']))->setParser(new ParserDemo());
+            $this->_classes['apiserver_'.$name] = $ebhClient;
+            return $this->_classes['apiserver_'.$name];
+        }
+
+    }
 }

@@ -10,20 +10,20 @@ $config = array(
         'pconnect' => false,
         'dbcharset' => 'utf8',
 		'autoload' => true,
-        'dbhost' => '192.168.0.27',
+        'dbhost' => '192.168.0.24',
         'dbuser' => 'root',
         'dbport' => 3306,
-        'dbpw' => '123456--',
+        'dbpw' => '123456',
         'dbname' => 'ebh2',
-//         'slave' => array(
-//             array(
-//                 'dbhost' => '192.168.0.28',
-//                 'dbuser' => 'root',
-//                 'dbport' => 3306,
-//                 'dbpw' => '12345699',
-//                 'dbname' => 'ebh2',
-//             )
-//         )
+         'slave' => array(
+             array(
+                 'dbhost' => '192.168.0.24',
+                 'dbuser' => 'root',
+                 'dbport' => 3306,
+                 'dbpw' => '123456',
+                 'dbname' => 'ebh2',
+             )
+         )
     ),
     'portaldb'=>array(
         'dbtype' => 'mysql',
@@ -32,14 +32,27 @@ $config = array(
         'pconnect' => false,
         'dbcharset' => 'utf8',
         'autoload' => true,
-        'dbhost' => '192.168.0.27',
+        'dbhost' => '192.168.0.24',
         //'dbhost' => '192.168.0.28',
         'dbuser' => 'root',
         'dbport' => 3306,
-        'dbpw' => '123456--',
+        'dbpw' => '123456',
         //'dbpw' => '12345699',
         'dbname' => 'portal'),
-
+    'snsdb'=>array(
+        'dbtype' => 'mysql',
+        'dbdriver' => 'mysqli',
+        'tablepre' => 'ebh_',
+        'pconnect' => false,
+        'dbcharset' => 'utf8',
+        'autoload' => true,
+        'dbhost' => '192.168.0.24',
+        //'dbhost' => '192.168.0.28',
+        'dbuser' => 'root',
+        'dbport' => 3306,
+        'dbpw' => '123456',
+        //'dbpw' => '12345699',
+        'dbname' => 'sns2'),
     'auto_helper'=>array(
         'common'
     ),
@@ -77,7 +90,7 @@ $config = array(
 	'cache_redis'=>array(
         'driver'=>'redis',
         'servers'=>array(
-            array('host'=>'192.168.0.27','port'=>6379)
+            array('host'=>'127.0.0.1','port'=>6379)
         )
     ),
     //输出编码等设置
