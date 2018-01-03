@@ -40,9 +40,9 @@ class ReviewController extends CControl{
 		$reviews = parseEmotion($reviews);
 		$this->assign('emotionarr',getEmotionarr());
 		$pagestr = show_page($count,10);
-
 		$this->assign('reviews', $reviews);
 		$this->assign('pagestr', $pagestr);
+		$this->assign('q',$q);
 		$this->assign('count', $count);
 		$this->assign('roominfo', $roominfo);
 		$this->assign('user', $user);
