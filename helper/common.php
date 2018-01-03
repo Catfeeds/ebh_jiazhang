@@ -893,3 +893,17 @@ function getavater($user,$size='120_120'){
     }
     return $face;
 }
+
+/**
+ * 调试并中断程序
+ * @param $cont
+ * @param bool $isDie
+ */
+function dump($cont,$isDie=true){
+    echo '<pre>';
+    var_dump($cont);
+    if($isDie){
+        exit();
+    }
+}
+

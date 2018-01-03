@@ -303,6 +303,7 @@ class GhrecordController extends CControl{
 	 */
 	private function getlvltit($credit){
 		$clconfig = Ebh::app()->getConfig()->load('creditlevel');
+		$lvltit = '';
 		foreach($clconfig as $clevel){
 			if($credit>=$clevel['min'] && $credit<=$clevel['max']){
 				$lvltit = $clevel['title'];
