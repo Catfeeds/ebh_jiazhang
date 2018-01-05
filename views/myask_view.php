@@ -22,6 +22,7 @@ $(function() {
 });
 </script>
 <style type="text/css">
+    body{background:rgb(243,243,243)}
 .fenge {
 	margin-top:0px;
 }
@@ -334,8 +335,10 @@ if (!empty($rewardlist)){
 ?>
 </div>
 </div>
-<div class="tithui">
-<span class="heida">回答</span><span>默认排序</span>
+<div style="background:#fff">
+    <div class="tithui">
+        <span class="heida" >回答</span><span>默认排序</span>
+    </div>
 </div>
 
 <?php if(!empty($answers)){ ?>
