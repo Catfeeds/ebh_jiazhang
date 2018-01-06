@@ -5,9 +5,9 @@
 <div class="workol">
 <div class="work_menu" style="position:relative;">
     <ul>
-		<li><a href="<?= geturl('myexam/all') ?>"><span>做作业</span></a></li>
-		<li class="workcurrent"><a href="<?= geturl('myexam/my')?>"><span>我做过的作业</span></a></li>
-		<li><a href="<?= geturl('myexam/box')?>"><span>草稿箱</span></a></li>
+		<li><a href="<?= geturl('college/examv2') ?>"><span>未做</span></a></li>
+		<li class="workcurrent"><a href="<?= geturl('college/examv2/my')?>"><span>做过的作业</span></a></li>
+		<li><a href="<?= geturl('college/examv2/box')?>"><span>草稿箱</span></a></li>
 		<li><a href="<?= geturl('myerrorbook') ?>"><span>错题本</span></a></li>
     </ul>
 	<?php if(empty($folder)){?>
@@ -63,14 +63,16 @@
 							</td>
 						  </tr>
 					<?php } ?>
-					
+
 				<?php } else { ?>
  					<tr>
 						<td colspan="8" align="center"><img  src="http://static.ebanhui.com/ebh/tpl/2014/images/zanwujilu.png"/></td>
 					</tr>
-				<?php } ?>
+                    <?//=nocontent()?>
+                <?php } ?>
 			  	</tbody>
 		  </table>
+
 		  <?= $pagestr ?>
     </div>
 </div>
@@ -97,7 +99,7 @@ $(function(){
 		var title = $("#title").val();
 		if(title == searchtext) 
 		title = "";
-		var url = '<?= geturl('myexam/my') ?>' + '?q='+title;
+		var url = '<?= geturl('college/examv2/my') ?>' + '?q='+title;
 		<?php if(!empty($folder)){
 			$itemid = $this->input->get('itemid');?>
 		url += '&folderid=<?=$folder['folderid']?>';
@@ -117,6 +119,6 @@ function searchs(strname){
 		sname = "";
 	}
 	
-	location.href='<?= geturl('myexam/my')?>?q='+sname;
+	location.href='<?= geturl('college/examv2/my')?>?q='+sname;
 }
 </script>

@@ -120,7 +120,7 @@
                 <div class="esukang">
                 	<a class="jzhome fl frnew" href="/ghrecord/home.html" target="mainFrame">主页</a>
 					<a class="jzxueji fl frold" href="/study.html" target="mainFrame" id="course">学习记录</a>
-					<a class="jzlishizuo fl frold" href="/myexam/all.html" target="mainFrame" id="course">历史作业</a>
+					<a class="jzlishizuo fl frold" href="/college/examv2.html" target="mainFrame" id="course">历史作业</a>
 					<a class="jzdayi fl frold" href="/myask/all.html" target="mainFrame" id="course">答疑</a>
 					<a class="jzping fl frold" href="/review/student.html" target="mainFrame" id="course">评论</a>
 					<a class="jzjilv fl frold" href="/ghrecord.html" target="mainFrame" id="course">成长记录</a>
