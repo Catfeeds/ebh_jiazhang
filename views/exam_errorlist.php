@@ -203,6 +203,7 @@ a:hover{text-decoration: none}
 	</div>
 	<div id="mpage" style="height:60px;clear:both; background: #fff;"></div>
 </div>
+<div class="clear"></div>
 <script id="t:folder" type="text/html">
 	<div>
 		<a href="javascript:void(0)" tid="<%=tid%>" onclick="getErrorList($(this).attr('tid'))"><%=foldername%></a>
