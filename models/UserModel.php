@@ -298,4 +298,24 @@ class UserModel extends CModel {
         $sql = 'select username,uid,face from ebh_users where face<>"" order by uid limit '.$param['limit'];
         return $this->db->query($sql)->list_array();
     }
+
+    /**
+     * 获取包含多个用户的数组
+     * @param  array $uid_array uid数组
+     * @return array            用户数组
+     */
+    public function getUserArray($uid_array) {
+        $user_array = array();
+        if (!empty($uid_array) && is_array($uid_array))
+        {
+            $uid_array = array_unique($uid_array);
+            $sql = 'SELECT uid,username,realname FROM ebh_users WHERE uid IN(' . implode(',', $uid_array) . ')';
+            $row = $this->db->query($sql)->list_array();
+            foreach ($row as $v)
+            {
+                $user_array[$v['uid']] = array('username' => $v['username'], 'realname' => $v['realname']);
+            }
+        }
+        return $user_array;
+    }
 }

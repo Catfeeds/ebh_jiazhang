@@ -35,6 +35,7 @@ class ReviewController extends CControl{
 		$params['q'] = $q;
 		$params['status'] = 1;
 		$reviews = $reviewmodel->getReviewListByUid($params);
+		//dump($reviews,0);
 		$params['rcrid'] = 1;
 		$count = $reviewmodel->getreviewcount($params);
 		$reviews = parseEmotion($reviews);

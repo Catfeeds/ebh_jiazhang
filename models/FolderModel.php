@@ -32,50 +32,57 @@ class FolderModel extends CModel{
 //		$sql = 'select f.folderid,f.foldername,f.img from ebh_folders';
 	}
 
-	/**
-	*获取课程列表
-	*在cq,hh,fssq大纲导航中可调用到,stores答疑专区
-	*/
-	public function getfolderlist($param){
-		$sql = 'SELECT f.crid,f.foldername,f.img,f.summary,f.folderpath,f.folderid,f.coursewarenum,f.fprice,f.viewnum,f.grade,f.credit FROM ebh_folders f ';
+    /**
+     *获取课程列表
+     *在cq,hh,fssq大纲导航中可调用到,stores答疑专区
+     */
+    public function getfolderlist($param, $unique = false){
+        $sql = 'SELECT f.crid,f.foldername,f.img,f.summary,f.folderpath,f.folderid,f.coursewarenum,f.fprice,f.viewnum,f.grade,f.credit,f.showmode,f.cwcredit,f.cwpercredit FROM ebh_folders f ';
         $wherearr = array();
- 
-		if(! empty ( $param ['folderid'] )){
-			$wherearr [] = 'f.folderid IN (' . $param ['folderid'] . ')';
-		}
-		if(! empty ( $param ['crid'] )){
-			$wherearr [] = ' f.crid = ' . $param ['crid'];
-		}
-		if(! empty ( $param ['uid'] )){
-			$wherearr [] = ' f.uid = ' . $param ['uid'];
-		}
-		if(! empty ( $param ['status'] )){
-			$wherearr [] = ' f.status = ' . $param ['status'];
-		}
-		if(! empty ( $param ['folderids'] )){	//folderid组合以逗号隔开，如3033,3034
-			$wherearr [] = ' f.folderid in (' . $param ['folderids'].')';
-		}
-		if(! empty ( $param ['folderlevel'] )){
-			$wherearr [] = ' f.folderlevel <> ' . $param ['folderlevel'];
-		}
-		if(isset ( $param ['upid'] )){
-			$wherearr [] = ' f.upid <> ' . $param ['upid'];
-		}
-		if(! empty ( $param ['coursewarenum '] )){	//过滤课程下课件数为0的课程
-			$wherearr [] = ' f.coursewarenum  > 0 ';
-		}
-		if(isset($param['filternum'])){
-			$wherearr [] = ' f.coursewarenum > 0';
-		}
-		if(isset($param['nosubfolder'])){
-			$wherearr [] = ' f.folderlevel = 2';
-		}
-		if(!empty($param['needpower'])){
-			$wherearr [] = ' f.power = 0';
-		}
-		if(!empty($param['q']))
-			$wherearr [] = 'f.foldername like \'%'.$this->db->escape_str($param['q']).'%\'';
+
+        if(! empty ( $param ['folderid'] )){
+            $wherearr [] = 'f.folderid IN (' . $param ['folderid'] . ')';
+        }
+        if(! empty ( $param ['crid'] )){
+            $wherearr [] = ' f.crid = ' . $param ['crid'];
+        }
+        if(! empty ( $param ['uid'] )){
+            $wherearr [] = ' f.uid = ' . $param ['uid'];
+        }
+        if(! empty ( $param ['status'] )){
+            $wherearr [] = ' f.status = ' . $param ['status'];
+        }
+        if(! empty ( $param ['folderids'] )){	//folderid组合以逗号隔开，如3033,3034
+            $wherearr [] = ' f.folderid in (' . $param ['folderids'].')';
+        }
+        if(! empty ( $param ['folderlevel'] )){
+            $wherearr [] = ' f.folderlevel <> ' . $param ['folderlevel'];
+        }
+        if(isset ( $param ['upid'] )){
+            $wherearr [] = ' f.upid <> ' . $param ['upid'];
+        }
+        if(! empty ( $param ['coursewarenum '] )){	//过滤课程下课件数为0的课程
+            $wherearr [] = ' f.coursewarenum  > 0 ';
+        }
+        if(isset($param['filternum'])){
+            $wherearr [] = ' f.coursewarenum > 0';
+        }
+        if(isset($param['nosubfolder'])){
+            $wherearr [] = ' f.folderlevel = 2';
+        }
+        if(!empty($param['needpower'])){
+            $wherearr [] = ' f.power = 0';
+        }
+        if(isset($param['isschoolfree'])){
+            $wherearr [] = ' f.isschoolfree='.$param['isschoolfree'];
+        }
+        if(!empty($param['q']))
+            $wherearr [] = 'f.foldername like \'%'.$this->db->escape_str($param['q']).'%\'';
+        $wherearr [] = 'f.del=0';
         $sql .= ' WHERE '.implode(' AND ', $wherearr);
+        if ($unique) {
+            $sql .= ' GROUP BY f.folderid';
+        }
         if(!empty($param['order'])) {
             $sql .= ' ORDER BY '.$param['order'];
         } else {
@@ -84,16 +91,16 @@ class FolderModel extends CModel{
         if(!empty($param['limit'])) {
             $sql .= ' limit '.$param['limit'];
         } else {
-			if (empty($param['page']) || $param['page'] < 1)
-				$page = 1;
-			else
-				$page = $param['page'];
-			$pagesize = empty($param['pagesize']) ? 10 : $param['pagesize'];
-			$start = ($page - 1) * $pagesize;
-			$sql .= ' limit ' . $start . ',' . $pagesize;
+            if (empty($param['page']) || $param['page'] < 1)
+                $page = 1;
+            else
+                $page = $param['page'];
+            $pagesize = empty($param['pagesize']) ? 10 : $param['pagesize'];
+            $start = ($page - 1) * $pagesize;
+            $sql .= ' limit ' . $start . ',' . $pagesize;
         }
         return $this->db->query($sql)->list_array();
-	}
+    }
 	/*
 	*课程数量（适用大纲导航数量）
 	*/
@@ -430,49 +437,49 @@ class FolderModel extends CModel{
 		return false;
 	}
 
-	/**
-	*获取班级对应的教师课程
-	*/
-	public function getClassFolder($param) {
-		$sql = 'select ct.uid from ebh_classteachers ct where ct.classid='.$param['classid'];
-		$tidlist = $this->db->query($sql)->list_array();
-		$tids = '';
-		if(!empty($tidlist)) {
-			foreach($tidlist as $tid) {
-				if(empty($tids))
-					$tids = $tid['uid'];
-				else
-					$tids .= ','.$tid['uid'];
-			}
-		}
-		if(!empty($param['grade'])){
-			$gradestr = ' or f.grade = '.$param['grade'];
-		}else{
-			$gradestr = '';
-		}
-		if(!empty($tids) || !empty($param['grade'])) {
-			if(empty($tids))
-				$tids = '""';
-			$fsql = 'select f.folderid,f.foldername,f.coursewarenum,f.img,f.credit,f.creditrule,f.playmode,f.showmode,f.creditmode,f.credittime from ebh_folders f '.
-					'where (f.folderid in(select tf.folderid from ebh_teacherfolders tf  '.
-					'where tf.tid in ('.$tids.')) '.$gradestr.')and f.crid='.$param['crid'].' and f.power=0';
-			if(!empty($param['order']))
-				$fsql.= ' order by '.$param['order'];
-			if(!empty($param['limit']))
-				$fsql .= ' limit '.$param['limit'];
-			else {
-				if (empty($param['page']) || $param['page'] < 1)
-					$page = 1;
-				else
-					$page = $param['page'];
-				$pagesize = empty($param['pagesize']) ? 10 : $param['pagesize'];
-				$start = ($page - 1) * $pagesize;
-				$fsql .= ' limit ' . $start . ',' . $pagesize;
-			}
-			return $this->db->query($fsql)->list_array();
-		}
-		return FALSE;
-	}
+    /**
+     *获取班级对应的教师课程
+     */
+    public function getClassFolder($param) {
+        $sql = 'select ct.uid from ebh_classteachers ct where ct.classid in ('.$param['classid'].')';
+        $tidlist = $this->db->query($sql)->list_array();
+        $tids = '';
+        if(!empty($tidlist)) {
+            foreach($tidlist as $tid) {
+                if(empty($tids))
+                    $tids = $tid['uid'];
+                else
+                    $tids .= ','.$tid['uid'];
+            }
+        }
+        if(!empty($param['grade'])){
+            $gradestr = ' or f.grade = '.$param['grade'];
+        }else{
+            $gradestr = '';
+        }
+        if(!empty($tids) || !empty($param['grade'])) {
+            if(empty($tids))
+                $tids = '\'\'';
+            $fsql = 'select f.folderid,f.foldername,f.coursewarenum,f.img,f.credit,f.creditrule,f.playmode,f.showmode,f.creditmode,f.credittime,f.cwcredit,f.cwpercredit from ebh_folders f '.
+                'where (f.folderid in(select tf.folderid from ebh_teacherfolders tf  '.
+                'where tf.tid in ('.$tids.')) '.$gradestr.')and f.crid='.$param['crid'].' and f.power=0';
+            if(!empty($param['order']))
+                $fsql.= ' order by '.$param['order'];
+            if(!empty($param['limit']))
+                $fsql .= ' limit '.$param['limit'];
+            else {
+                if (empty($param['page']) || $param['page'] < 1)
+                    $page = 1;
+                else
+                    $page = $param['page'];
+                $pagesize = empty($param['pagesize']) ? 10 : $param['pagesize'];
+                $start = ($page - 1) * $pagesize;
+                $fsql .= ' limit ' . $start . ',' . $pagesize;
+            }
+            return $this->db->query($fsql)->list_array();
+        }
+        return FALSE;
+    }
 	
 	/*
 	isschool!=7 ,只按年级获取课程

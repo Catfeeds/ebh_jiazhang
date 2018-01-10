@@ -345,49 +345,85 @@ class GhrecordController extends CControl{
 		$studymodel = $this->model('Studylog');
 		$exammodel = $this->model('Exam');
 		$classesmodel = $this->model('Classes');
-		
-		//作业
-		$myclass = $this->myclass;
-		$zqarr['uid'] = $user['uid'];
-		$zqarr['crid'] = $roominfo['crid'];
-		$zqarr['classid'] = $myclass['classid'];
-		$zqarr['hasanswer'] = 1;
-		if(!empty($myclass['grade'])) {	//班级有年级信息，则显示此年级下的所有作业
-			$zqarr['grade'] = $myclass['grade'];
-			$zqarr['district'] = $myclass['district'];
-		}
-		$myexamcount = $exammodel->getExamListCountByMemberid($zqarr);
-		$info['myexamcount'] = $myexamcount;
+
+        //作业
+        $myclass = $this->myclass;
+        $zqarr['uid'] = $user['uid'];
+        $zqarr['crid'] = $roominfo['crid'];
+        $zqarr['classid'] = $myclass['classid'];
+        $zqarr['hasanswer'] = 1;
+        if(!empty($myclass['grade'])) {	//班级有年级信息，则显示此年级下的所有作业
+            $zqarr['grade'] = $myclass['grade'];
+            $zqarr['district'] = $myclass['district'];
+        }
+        //作业数
+        $myexamcount = 0;
+        $exampower = $this->model('appmodule')->checkRoomMoudle($roominfo['crid'],'/troomv2/examv2.html');
+        if ($exampower) {//判断有没有开通新的作业
+            $dataserver = EBH::app()->getConfig('dataserver')->load('dataserver');
+            $servers = $dataserver['servers'];
+            //随机抽取一台服务器
+            $target_server = $servers[array_rand($servers,1)];
+            $url = 'http://'.$target_server.'/exam/selist';
+            $param['tids'] = array();
+            $param['ttype'] = 'FOLDER';
+            $param['crid'] = $roominfo['crid'];
+            $param['action'] = 'hasdo';
+            $param['status'] = 1;
+            $param['size'] = 1;
+            $param['k'] = authcode(json_encode(array('uid'=>$user['uid'],'crid'=>$roominfo['crid'],'t'=>SYSTIME)),'ENCODE');
+            $postParam = json_encode($param);
+            $postRet = do_post($url,$postParam,FALSE,TRUE);
+            if(!empty($postRet->datas->pageInfo->totalElement)){
+                $myexamcount = $postRet->datas->pageInfo->totalElement;
+            }
+        } else {
+            $myexamcount = $exammodel->getExamListCountByMemberid($zqarr);
+        }
+        $info['myexamcount'] = $myexamcount;
 		//学习
 		$mystudycount = $studymodel->getStudyCount(array('uid'=>$user['uid'],'totalflag'=>0,'crid'=>$roominfo['crid']));
 		$info['mystudycount'] = $mystudycount;
 		//提问
 		$myaskcount = $askmodel->getmyaskcount(array('uid'=>$user['uid'],'shield'=>0,'crid'=>$roominfo['crid']));
 		$info['myaskcount'] = $myaskcount;
-			
-		//所有作业
-		//先从缓存读取所有作业计数
-		$redis = Ebh::app()->getCache('cache_redis');
-		$redis_key = 'class_allexamcount_' . $myclass['classid'];
-		$myallexamcount = $redis->get($redis_key);
-		//没有缓存则从数据库读取
-		if($myallexamcount === false)
-		{
-			$qarr['uid'] = $user['uid'];
-			$qarr['crid'] = $roominfo['crid'];
-			$qarr['classid'] = $myclass['classid'];
-			if(!empty($myclass['grade'])) {	//班级有年级信息，则显示此年级下的所有作业
-				$qarr['grade'] = $myclass['grade'];
-				$qarr['district'] = $myclass['district'];
-			}
-			$myallexamcount = $exammodel->getExamListCountByMemberid($qarr);
-			$redis->set($redis_key, $myallexamcount, 360);//360秒过期
-		}
-		else
-		{
-			$myallexamcount = intval($myallexamcount);
-		}
-		$info['myallexamcount'] = $myallexamcount;
+
+        //所有作业
+        //先从缓存读取所有作业计数
+        $redis = Ebh::app()->getCache('cache_redis');
+        $redis_key = 'class_allexamcount_' . $myclass['classid'];
+        $myallexamcount = $redis->get($redis_key);
+        //没有缓存则从数据库读取
+        if($myallexamcount === false)
+        {
+            $qarr['uid'] = $user['uid'];
+            $qarr['crid'] = $roominfo['crid'];
+            $qarr['classid'] = $myclass['classid'];
+            if(!empty($myclass['grade'])) {	//班级有年级信息，则显示此年级下的所有作业
+                $qarr['grade'] = $myclass['grade'];
+                $qarr['district'] = $myclass['district'];
+            }
+            //作业数
+            if ($exampower) {//判断有没有开通新的作业
+                $param['tids'] = $this->getfolderids($user['uid'],$roominfo);
+                if (empty($param['tids'])) {
+                    $myallexamcount = 0;
+                } else {
+                    $param['action'] = 'fordo';
+                    $postParam = json_encode($param);
+                    $postRet = do_post($url,$postParam,FALSE,TRUE);
+                    $myallexamcount = $postRet->datas->pageInfo->totalElement + $myexamcount;
+                }
+            } else {
+                $myallexamcount = $exammodel->getExamListCountByMemberid($qarr);
+            }
+            $redis->set($redis_key, $myallexamcount, 360);//360秒过期
+        }
+        else
+        {
+            $myallexamcount = intval($myallexamcount);
+        }
+        $info['myallexamcount'] = $myallexamcount;
 		
 		//答疑
 		$myanscount = $askmodel->getaskcountbyanswers(array('uid'=>$user['uid'],'crid'=>$roominfo['crid'],'qshield'=>0,'ashield'=>0));
@@ -414,6 +450,34 @@ class GhrecordController extends CControl{
 		$info['myfavoritcount'] = $mybaseinfo['followsnum'];
 		return $info;
 	}
+
+    /*
+        获取有权限的课程：(免费，全校免费，开通未过期忽略),免费的课程也需要开通，所以注释掉了
+        */
+    private function getfolderids($uid,$roominfo){
+        $userpermodel = $this->model('Userpermission');
+        $myperparam = array('uid'=>$uid,'crid'=>$roominfo['crid'],'filterdate'=>1);
+        $myfolderlist = $userpermodel->getUserPayFolderList($myperparam);
+        $folderids = array();
+        if($roominfo['isschool'] == 7){
+            //全校免费课程
+            $foldermodel = $this->model('Folder');
+            $rumodel = $this->model('roomuser');
+            $userin = $rumodel->getroomuserdetail($roominfo['crid'],$uid);
+            if(!empty($userin)){
+                $schoolfreelist = $foldermodel->getfolderlist(array('crid'=>$roominfo['crid'],'isschoolfree'=>1,'limit'=>1000));
+                foreach($schoolfreelist as $f){
+                    $folderids[]= $f['folderid'];
+                }
+            }
+
+        }
+
+        foreach($myfolderlist as $f){
+            $folderids[]= $f['folderid'];
+        }
+        return $folderids;
+    }
 
 
 	public function init(){

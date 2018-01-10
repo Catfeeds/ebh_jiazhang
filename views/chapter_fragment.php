@@ -11,17 +11,23 @@ class="mamase">
                 </a>
             </div>
         </div>
-        <div id="middleselect" class="kstdg" style="margin-left:0;">
-            <span id="middleselecttitle" class="xtitle" tag=0>
-                请选择课程
+        <div id="courseselect" class="kstdg" style="margin-left:0;">
+            <span id="courseselecttit" class="xtitle" tag=0>
+            	请选择课程
             </span>
-            <div class="liawtlet" style="display:none;max-height:500px;overflow-y: auto;">
-            </div>
+            <div class="liawtlet" style="display:none;max-height:300px;overflow-y: auto;"></div>
         </div>
-        <div id="thirdselect" class="kstdg" style="width:400px;display:none;">
-            <span id="thirdselecttitle" class="xtitle" tag=0>
-                请选择知识点
-            </span>
+        <div id="middleselect" class="kstdg" style="margin-left:5px;">
+            <span id="middleselecttitle" class="xtitle" tag=0>请选择版本</span>
+            <div class="liawtlet" style="display:none;max-height:300px;overflow-y: auto;"></div>
+        </div>
+        <div id="mysecondselect" class="kstdg" style="margin-left:5px;display:none;">
+        	<span id="mysecondselecttitle" class="xtitle"  tag=0>请选择知识点</span>
+        	<div class="liawtlet" style="display:block;max-height:300px;overflow-y: scroll;"></div>
+        </div>
+        <div id="mythirdselect" class="kstdg" style="margin-left:5px;width:380px;display:none;">
+            <span id="mythirdselecttitle" class="xtitle" tag=0>请选择知识点</span>
+			<input type="hidden" class="chapterpath" />
             <div id="thirdselectpanel" style="position:absolute;top:24px;left:-1px;border: solid 1px #d9d9d9;display:none;">
             </div>
         </div>
@@ -69,12 +75,18 @@ class="mamase">
                     填空题
                 </label>
             </li>
-           <!--  <li class="kedtg">
+            <li class="kedtg">
                 <input id="myequet" type="radio" value="E" name="myquetype">
                 <label for="myequet">
                     文字题
                 </label>
-            </li> -->
+            </li>
+            <li class="kedtg">
+                <input id="myhquet" type="radio" value="H" name="myquetype">
+                <label for="myhquet">
+                    主观题
+                </label>
+            </li>
         </ul>
     </div>
 </div>

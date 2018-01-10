@@ -5,7 +5,7 @@
 <link type="text/css" rel="stylesheet" href="http://static.ebanhui.com/jiazhang/css/jzxiang.css" />
 <script type="text/javascript" src="http://static.ebanhui.com/js/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="http://static.ebanhui.com/ebh/js/common.js"></script>
-<link type="text/css" href="http://static.ebanhui.com/ebh/js/jquery/jquery-ui/css/default/jquery-ui-1.8.1.custom.css" rel="stylesheet" />	
+<link type="text/css" href="http://static.ebanhui.com/ebh/js/jquery/jquery-ui/css/default/jquery-ui-1.8.1.custom.css" rel="stylesheet" />
 <script type="text/javascript" src="http://static.ebanhui.com/ebh/js/jquery/jquery-ui/jquery-ui-1.8.1.custom.min.js"></script>
 
 <script type="text/javascript">
@@ -14,7 +14,7 @@ $(function() {
    initsearch("title",searchtext);
    $("#ser").click(function(){
        var title = $("#title").val();
-       if(title == searchtext) 
+       if(title == searchtext)
            title = "";
        var url = '<?= geturl('askquestion') ?>' + '?q='+title;
        document.location.href = url;
@@ -34,8 +34,8 @@ $(function() {
     <ul>
 
          <li><a href="<?= geturl('exam/un') ?>"><span>待做作业</span></a></li>
-		 <li class="workcurrent"><a href="<?= geturl('exam') ?>"><span>我做过的作业</span></a></li>  
-		  <li><a href="<?= geturl('exam/box') ?>"><span>草稿箱</span></a></li> 
+		 <li class="workcurrent"><a href="<?= geturl('exam') ?>"><span>我做过的作业</span></a></li>
+		  <li><a href="<?= geturl('exam/box') ?>"><span>草稿箱</span></a></li>
     </ul>
 </div>
  <div class="workdata">
@@ -52,8 +52,8 @@ $(function() {
 					  </tr>
 			  	</thead>
 				<tbody>
-					
-				
+
+
 				<?php if(!empty($exams)) { ?>
 					<?php foreach($exams as $exam) {?>
 						  <tr>
@@ -64,10 +64,10 @@ $(function() {
 							<td style="width:70px;"><?= ceil($exam['completetime']/60)?>分钟</td>
 							<td style="width:70px;"><?= $exam['score']?>/<?= round($exam['totalscore'],2) ?></td>
 							<td style="width:60px;"><?= $exam['answercount'] ?></td>
-							
+
 						  </tr>
 					<?php } ?>
-					
+
 				<?php } else { ?>
  					<tr>
 						<td colspan="8" align="center">暂无记录</td>

@@ -33,6 +33,7 @@ class MyaskController extends CControl {
 	public function all(){
 		$roominfo = Ebh::app()->room->getcurroom();
         $user = Ebh::app()->user->getloginuser();
+        //log_message(json_encode($user));die;
         $q = $this->input->get('q');
 		$askdate = $this->input->get('d');
 		$aq = $this->input->get('aq');

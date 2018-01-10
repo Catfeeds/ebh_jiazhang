@@ -109,6 +109,33 @@ class UserpermissionModel extends CModel{
         }
 		return $this->db->query($sql)->list_array();
 	}
+
+    /**
+     *获取用户已开通的课件
+     */
+    public function getUserPayCwList($param){
+        if(empty($param['uid']))
+            return FALSE;
+        $sql = "select p.pid,p.cwid,p.crid,p.folderid from ebh_userpermisions p join ebh_roomcourses rc on p.cwid=rc.cwid";
+        $wherearr = array();
+        $wherearr[] = 'p.uid='.$param['uid'];
+        if(!empty($param['crid'])) {
+            $wherearr[] = 'p.crid='.$param['crid'];
+        }
+        if(!empty($param['filterdate'])) {	//过滤已过期
+            $enddate = SYSTIME - 86400;
+            $wherearr[] = 'p.enddate>'.$enddate;
+        }
+        if(!empty($param['folderid'])){
+            $wherearr[] = 'p.folderid='.$param['folderid'];
+        }
+        if(!empty($param['cwids'])){
+            $wherearr[] = 'p.cwid in('.$param['cwids'].')';
+        }
+        $wherearr[] = 'p.cwid<>0';
+        $sql .= ' WHERE '.implode(' AND ',$wherearr);
+        return $this->db->query($sql)->list_array();
+    }
 	/**
 	*根据用户编号和itemid编号获取权限
 	*/
@@ -165,25 +192,37 @@ class UserpermissionModel extends CModel{
 		$payitem = $this->db->query($sql)->row_array();
 		return $payitem;
 	}
-	/**
-	*获取用户已开通的课程
-	*/
-	public function getUserPayFolderList($param = array()) {
-		if(empty($param['uid']))
-			return FALSE;
-		$sql = "select p.pid,p.itemid,p.crid,p.folderid from ebh_userpermisions p";
-		$wherearr = array();
-		$wherearr[] = 'p.uid='.$param['uid'];
-		if(!empty($param['crid'])) {
-			$wherearr[] = 'p.crid='.$param['crid'];
-		}
-		if(!empty($param['filterdate'])) {	//过滤已过期
-			$enddate = SYSTIME - 86400;
-			$wherearr[] = 'p.enddate>'.$enddate;
-		}
-		$sql .= ' WHERE '.implode(' AND ',$wherearr);
-		return $this->db->query($sql)->list_array();
-	}
+    /**
+     * 获取用户已开通的课程
+     * @param array $param 查询参数
+     * @param bool $setKey 是否以课程ID做为结果数组的键
+     * @return bool
+     */
+    public function getUserPayFolderList($param = array(), $setKey = false) {
+        if(empty($param['uid']))
+            return FALSE;
+        $sql = "select p.pid,p.itemid,p.crid,p.folderid from ebh_userpermisions p";
+        $wherearr = array();
+        $wherearr[] = 'p.uid='.$param['uid'];
+        if(!empty($param['crid'])) {
+            $wherearr[] = 'p.crid='.$param['crid'];
+        }
+        if(!empty($param['filterdate'])) {	//过滤已过期
+            $enddate = SYSTIME - 86400;
+            $wherearr[] = 'p.enddate>'.$enddate;
+        }
+        if(!empty($param['folderid'])){
+            if (!is_array($param['folderid'])) {
+                $wherearr[] = 'p.folderid='.$param['folderid'];
+            } else {
+                $wherearr[] = 'p.folderid in('.implode(',', $param['folderid']).')';
+            }
+        }
+        $wherearr[] = 'p.cwid=0';
+        $wherearr[] = 'p.itemid<>0';
+        $sql .= ' WHERE '.implode(' AND ',$wherearr);
+        return $this->db->query($sql)->list_array($setKey ? 'folderid' : '');
+    }
 	/**
 	*获取学校下所有的服务项
 	*/

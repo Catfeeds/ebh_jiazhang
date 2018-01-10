@@ -3,51 +3,54 @@
  *我的知识点模型
  */
 class MychapterModel extends CModel{
-	public function getList($param= array()){
-		$sql = 'SELECT c.*,f.foldername FROM  ebh_schchapters c  JOIN ebh_folders f ON c.folderid = f.folderid';
-		$wherearr = array ();
-		if (!empty($param['chapterid'] )) {
-			$wherearr [] = 'c.chapterid = ' . $param['chapterid'];
-		}
-		if (isset($param['pid'] )) {
-			$wherearr [] = 'c.pid = ' . $param['pid'];
-		}
-		if(! empty ( $param['chapterpath'] )){
-			$wherearr [] = ' c.chapterpath like \''.$param['chapterpath'].'%\' ';
-		}
-		if(! empty ( $param['level'] )){
-			$wherearr [] = ' c.level = ' . $param['level'];
-		}
-		if(! empty ( $param['folderid'] )){
-			$wherearr [] = ' c.folderid = ' . $param['folderid'];
-		}
-		if (!empty( $wherearr )) {
-			$sql.= ' WHERE ' . implode ( ' AND ', $wherearr );
-		}
-		if(!empty($param['order'])){
-			$sql.=' order by '.$param['order'];
-		}else{
-			$sql.=' order by c.pid,c.displayorder,c.chapterid ';
-		}
-		if (!empty($param['limit'])) {
+    public function getList($param= array()){
+        $sql = 'SELECT c.*,f.foldername FROM  ebh_schchapters c  JOIN ebh_folders f ON c.folderid = f.folderid';
+        $wherearr = array ();
+        if (!empty($param['chapterid'] )) {
+            $wherearr [] = 'c.chapterid = ' . $param['chapterid'];
+        }
+        if(!empty($param['crid'])){
+            $wherearr[] = 'c.crid = '.$param['crid'];
+        }
+        if (isset($param['pid'] )) {
+            $wherearr [] = 'c.pid = ' . $param['pid'];
+        }
+        if(! empty ( $param['chapterpath'] )){
+            $wherearr [] = ' c.chapterpath like \''.$param['chapterpath'].'%\' ';
+        }
+        if(! empty ( $param['level'] )){
+            $wherearr [] = ' c.level = ' . $param['level'];
+        }
+        if(! empty ( $param['folderid'] )){
+            $wherearr [] = ' c.folderid = ' . $param['folderid'];
+        }
+        if (!empty( $wherearr )) {
+            $sql.= ' WHERE ' . implode ( ' AND ', $wherearr );
+        }
+        if(!empty($param['order'])){
+            $sql.=' order by '.$param['order'];
+        }else{
+            $sql.=' order by c.pid,c.displayorder,c.chapterid ';
+        }
+        if (!empty($param['limit'])) {
             $sql .= ' limit ' . $param['limit'];
         } else {
             $sql .= ' limit 0,10';
         }
-		$chapterList = $this->db->query($sql)->list_array();
-		$newChapterList = array();
-		foreach ($chapterList as $chapter) {
-			$newChapterList[$chapter['chapterid']] = $chapter;
-		}
-		$result = array();
-		$chapterList = $this->getchaptertrees($newChapterList);
-		if(!empty($chapterList)) {
-			foreach($chapterList as $chapter) {
-				$result[] = $chapter;
-			}
-		}
-		return $result;
-	}
+        $chapterList = $this->db->query($sql)->list_array();
+        $newChapterList = array();
+        foreach ($chapterList as $chapter) {
+            $newChapterList[$chapter['chapterid']] = $chapter;
+        }
+        $result = array();
+        $chapterList = $this->getchaptertrees($newChapterList);
+        if(!empty($chapterList)) {
+            foreach($chapterList as $chapter) {
+                $result[] = $chapter;
+            }
+        }
+        return $result;
+    }
 
 	/**
 	*以树结构方式获取章节列表
@@ -181,22 +184,22 @@ class MychapterModel extends CModel{
 		return $this->db->delete('ebh_schchapters',$where);
 	}
 
-	/**
-	*获取老师所教课程,用于知识点编辑
-	*/
-	function getfolder($crid,$tid = 0){
-		$result = array();
-		if(!empty($tid)){
-			$sql = 'SELECT f.folderid,f.foldername,tf.tid FROM ebh_folders f left join  ebh_teacherfolders tf on f.folderid = tf.folderid  where tf.crid = '.$crid.' and f.folderlevel = 2 and f.power != 2 and tf.tid = '.$tid;
-			$result = array();
-			$result = $this->db->query($sql)->list_array();
-		}else{
-			$sql = 'SELECT f.folderid,f.foldername FROM ebh_folders f where f.crid = '.$crid.' and f.folderlevel = 2 and f.power != 2';
-			$result = array();
-			$result = $this->db->query($sql)->list_array();
-		}
-		return $result;
-	}
+    /**
+     *获取老师所教课程,用于知识点编辑
+     */
+    function getfolder($crid,$tid = 0){
+        $result = array();
+        if(!empty($tid)){
+            $sql = 'SELECT f.folderid,f.foldername,tf.tid FROM ebh_folders f left join  ebh_teacherfolders tf on f.folderid = tf.folderid  where tf.crid = '.$crid.' and f.folderlevel = 2 and f.power != 2 and tf.tid = '.$tid;
+            $result = array();
+            $result = $this->db->query($sql)->list_array();
+        }else{
+            $sql = 'SELECT f.folderid,f.foldername FROM ebh_folders f where f.crid = '.$crid.' and f.folderlevel = 2 and f.power != 2';
+            $result = array();
+            $result = $this->db->query($sql)->list_array();
+        }
+        return $result;
+    }
 
 	function multimove($param){
 		$setarr = array();
@@ -272,4 +275,39 @@ class MychapterModel extends CModel{
 		);
 		return $this->db->update('ebh_schchapters',$setarr,$wherearr);
 	}
+
+    //获取知识点列表，与getList的区别是知识点不再左连接后再查询提高效率
+    public function getChapterList($param= array()){
+        $sql = 'SELECT c.chapterid, c.pid, c.chaptername FROM  ebh_schchapters c ';
+        $wherearr = array ();
+        if (!empty($param['chapterid'] )) {
+            $wherearr [] = 'c.chapterid = ' . $param['chapterid'];
+        }
+        if(!empty($param['crid'])){
+            $wherearr[] = 'c.crid = '.$param['crid'];
+        }
+        if (isset($param['pid'] )) {
+            $wherearr [] = 'c.pid = ' . $param['pid'];
+        }
+        if(! empty ( $param['chapterpath'] )){
+            $wherearr [] = ' c.chapterpath like \''.$param['chapterpath'].'%\' ';
+        }
+        if(! empty ( $param['level'] )){
+            $wherearr [] = ' c.level = ' . $param['level'];
+        }
+        if (!empty( $wherearr )) {
+            $sql.= ' WHERE ' . implode ( ' AND ', $wherearr );
+        }
+        if(!empty($param['order'])){
+            $sql.=' order by '.$param['order'];
+        }else{
+            $sql.=' order by c.pid,c.displayorder,c.chapterid ';
+        }
+        if (!empty($param['limit'])) {
+            $sql .= ' limit ' . $param['limit'];
+        }
+        $chapterList = $this->db->query($sql)->list_array();
+        return $chapterList;
+    }
+
 }

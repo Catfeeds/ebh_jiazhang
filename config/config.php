@@ -10,18 +10,18 @@ $config = array(
         'pconnect' => false,
         'dbcharset' => 'utf8',
 		'autoload' => true,
-        'dbhost' => '192.168.0.24',
+        'dbhost' => '192.168.0.41',
         'dbuser' => 'root',
         'dbport' => 3306,
-        'dbpw' => '123456',
-        'dbname' => 'ebh2',
+        'dbpw' => '123456789',
+        'dbname' => 'ebh',
          'slave' => array(
              array(
-                 'dbhost' => '192.168.0.24',
+                 'dbhost' => '192.168.0.41',
                  'dbuser' => 'root',
                  'dbport' => 3306,
-                 'dbpw' => '123456',
-                 'dbname' => 'ebh2',
+                 'dbpw' => '123456789',
+                 'dbname' => 'ebh',
              )
          )
     ),
@@ -84,13 +84,13 @@ $config = array(
     'cache'=>array(
         'driver'=>'memcache',
         'servers'=>array(
-            array('host'=>'127.0.0.1','port'=>11211)
+            array('host'=>'192.168.0.24','port'=>11211)
         )
     ),
 	'cache_redis'=>array(
         'driver'=>'redis',
         'servers'=>array(
-            array('host'=>'127.0.0.1','port'=>6379)
+            array('host'=>'192.168.0.24','port'=>6379)
         )
     ),
     //输出编码等设置

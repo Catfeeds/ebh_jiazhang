@@ -15,6 +15,36 @@ class ClassesModel extends CModel{
                 'where c.crid='.$crid.' and ct.uid = '.$uid.' and c.`status`=0 order by c.classid';
         return $this->db->query($sql)->list_array();
     }
+
+    /**
+     *获取用户所在的班级信息
+     *@param int $crid教室编号
+     *@param int $uid 用户编号
+     */
+    public function getClassByUid($crid,$uid,$needlist=false) {
+        if(empty($crid) || empty($uid)){
+            return FALSE;
+        }
+        $sql = "SELECT cs.classid,c.classname,c.grade,c.district,c.headteacherid from  ebh_classstudents cs ".
+            "JOIN ebh_classes c on (c.classid = cs.classid) ".
+            "WHERE c.crid=$crid and cs.uid = $uid";
+        if($needlist === TRUE){
+            $classinfo = $this->db->query($sql)->list_array();
+        }else{
+            $classinfo = $this->db->query($sql)->row_array();
+        }
+        return $classinfo;
+    }
+    /**
+     * 获取用户的班级信息
+     */
+    public function getClassInfoByCrid($crid,$uidarr){
+        if(empty($crid) || empty($uidarr)){
+            return false;
+        }
+        $sql = 'select c.classname,c.classid,cs.uid from `ebh_classes` c left join `ebh_classstudents` cs on(c.classid = cs.classid) where c.crid ='.intval($crid).' and cs.uid in('.implode(',',$uidarr).')';
+        return $this->db->query($sql)->list_array();
+    }
     /**
      * 获取班级学生列表
      * @param array $queryarr
@@ -276,18 +306,7 @@ class ClassesModel extends CModel{
 		$this->db->update('ebh_classrooms',array(),array('crid'=>$param['crid']),array('stunum'=>'stunum+1'));
 		return $this->db->insert('ebh_classstudents',$setarr);
 	}
-	/**
-	*获取用户所在的班级信息
-	*@param int $crid教室编号
-	*@param int $uid 用户编号
-	*/
-	public function getClassByUid($crid,$uid) {
-		$sql = "SELECT cs.classid,c.classname,c.grade,c.district from  ebh_classstudents cs ".
-				"JOIN ebh_classes c on (c.classid = cs.classid) ".
-				"WHERE c.crid=$crid and cs.uid = $uid";
-		return $this->db->query($sql)->row_array();
 
-	}
 	/**
 	*获取用户所在的班级信息
 	*@param int $crid教室编号
@@ -548,4 +567,27 @@ class ClassesModel extends CModel{
         }
 		return TRUE;
 	}
+
+    /**
+     * 班级学生的id
+     * @param $classid array or int
+     * @return array
+     */
+    public function getStudentUidByClassid($classid = 0){
+        if (is_array($classid)) {
+            $classids = array_map('intval', $classid);
+        } else {
+            $classids = array(intval($classid));
+        }
+        foreach ($classids as $key=>$value) {
+            if (empty($value))
+                unset($classids[$key]);
+        }
+        if (empty($classids)) {
+            return array();
+        }
+        $classids = implode(',', $classids);
+        $sql = 'select distinct uid from ebh_classstudents where classid in('.$classids.') and uid > 0';
+        return $this->db->query($sql)->list_array();
+    }
 }

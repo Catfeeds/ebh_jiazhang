@@ -159,7 +159,7 @@ class ExamModel extends CModel {
     public function getnewexamcountbytime($crid, $uid, $time) {
         $count = 0;
         $sql = "SELECT COUNT(*) count FROM ebh_exams e LEFT JOIN ebh_examanswers a ON (e.eid = a.eid) " .
-                "WHERE e.crid=$crid AND e.uid=$uid AND e.status = 1 AND a.status = 1 AND (a.dateline+a.completetime) > $time";
+            "WHERE e.crid=$crid AND e.uid=$uid AND e.status = 1 AND a.status = 1 AND (a.dateline+a.completetime) > $time";
         $row = $this->db->query($sql)->row_array();
         if (!empty($row))
             $count = $row['count'];
@@ -897,70 +897,82 @@ class ExamModel extends CModel {
 		}
 		return $this->db->query($sql)->list_array();
 	}
-	/**
-	*根据学生编号获取学校学生所在班级下的作业记录总数
-	*/
-	public function getExamListCountByMemberid($param) {
-		$count = 0;
-		if(empty($param['uid']))
-			return $count;
-		$sql = 'SELECT count(*) count from ebh_schexams e '.
-				'LEFT JOIN ebh_schexamanswers a on (e.eid = a.eid AND a.uid='.$param['uid'].') '.
-				'JOIN ebh_users u on (u.uid = e.uid) ';
-		$wherearr = array();
-		if(!empty($param['crid']))
-			$wherearr[] = 'e.crid='.$param['crid'];
-		if(!empty($param['classid'])) {	
-			if(!empty($param['grade'])) {	// 根据年级过滤，一般在布置作业到年级时有效
-				if(isset($param['district'])) {	// 根据校区过滤，一般在布置作业到年级时有效
-					$wherearr[] = '(e.classid = '.$param['classid']. ' or e.grade = '.$param['grade'].' and e.district = '.$param['district'].')';
-				} else {
-					$wherearr[] = '(e.classid = '.$param['classid']. ' or e.grade = '.$param['grade'].')';
-				}
-			} else {
-				$wherearr[] = 'e.classid='.$param['classid'];
-			}
-		}
-		$wherearr[] = 'e.status = 1';
-		if(!empty($param['tid'])){
-			$wherearr[] = 'e.uid = '.$param['tid'];
-		}
-		if(isset($param['filteranswer']))	//过滤学生是否已经答题了，此处传值表示只显示学生未答的
-			$wherearr[] = 'a.aid IS NULL';
-		if(isset($param['hasanswer']))	//过滤学生是否已经答题了，此处传值表示只显示学生已答的
-			$wherearr[] = 'a.aid IS NOT NULL';
-		if(isset($param['subtime'])) {	// 根据时间获取记录数
-			$wherearr[] = 'e.dateline > '.$param['subtime'];
-		}
-		// if(!empty($param['grade'])) {	// 根据年级过滤，一般在布置作业到年级时有效
-		// 	$wherearr[] = 'e.grade = '.$param['grade'];
-		// }
-		// if(isset($param['district'])) {	// 根据校区过滤，一般在布置作业到年级时有效
-		// 	$wherearr[] = 'e.district = '.$param['district'];
-		// }
-		if(!empty($param['q']))	//按作业标题搜索
-			$wherearr[] = 'title like \'%'.$this->db->escape_str($param['q']).'%\'';
-		if(!empty($param['abegindate'])) {	//答题开始时间
-			$wherearr[] = 'a.dateline>='.$param['abegindate'];
-		}
-		if(!empty($param['aenddate'])) {	//答题完成时间
-			$wherearr[] = 'a.dateline<'.$param['aenddate'];
-		}
-		if(!empty($param['ebegindate'])) {	//布置时间从
-			$wherearr[] = 'e.dateline>='.$param['ebegindate'];
-		}
-		if(!empty($param['eenddate'])) {	//布置时间到
-			$wherearr[] = 'e.dateline<'.$param['eenddate'];
-		}
-		if(isset($param['astatus'])) {	// 草稿箱状态，0为答题草稿箱 1为已提交
-			$wherearr[] = 'a.status = '.$param['astatus'];
-		}
-		$sql .= ' WHERE '.implode(' AND ',$wherearr);
-		$row = $this->db->query($sql)->row_array();
-		if(!empty($row)) 
-			$count = $row['count'];
-		return $count;
-	}
+    /**
+     *根据学生编号获取学校学生所在班级下的作业记录总数
+     */
+    public function getExamListCountByMemberid($param) {
+        $count = 0;
+        if(empty($param['uid']))
+            return $count;
+        $sql = 'SELECT count(*) count from ebh_schexams e '.
+            'LEFT JOIN ebh_schexamanswers a on (e.eid = a.eid AND a.uid='.$param['uid'].') '.
+            'JOIN ebh_users u on (u.uid = e.uid) LEFT JOIN ebh_folders f on (f.folderid = e.folderid) LEFT JOIN ebh_coursewares c on (c.cwid = e.cwid)';
+        $wherearr = array();
+        if(!empty($param['crid']))
+            $wherearr[] = 'e.crid='.$param['crid'];
+        if(!empty($param['classid'])) {
+            if(!empty($param['grade'])) {	// 根据年级过滤，一般在布置作业到年级时有效
+                if(isset($param['district'])) {	// 根据校区过滤，一般在布置作业到年级时有效
+                    $wherearr[] = '(e.classid = '.$param['classid']. ' or e.grade = '.$param['grade'].' and e.district = '.$param['district'].')';
+                } else {
+                    $wherearr[] = '(e.classid = '.$param['classid']. ' or e.grade = '.$param['grade'].')';
+                }
+            } else {
+                $wherearr[] = 'e.classid='.$param['classid'];
+            }
+        }
+        $wherearr[] = 'e.status = 1';
+        if(!empty($param['tid'])){
+            $wherearr[] = 'e.uid = '.$param['tid'];
+        }
+        if(!empty($param['anstatus'])){
+            $wherearr[] = '(a.status = 0 or a.status IS NULL)';
+        }
+        if(isset($param['filteranswer']))	//过滤学生是否已经答题了，此处传值表示只显示学生未答的
+            $wherearr[] = 'a.aid IS NULL';
+        if(isset($param['hasanswer']))	//过滤学生是否已经答题了，此处传值表示只显示学生已答的
+            $wherearr[] = 'a.aid IS NOT NULL';
+        if(isset($param['subtime'])) {	// 根据时间获取记录数
+            $wherearr[] = 'e.dateline > '.$param['subtime'];
+        }
+        // if(!empty($param['grade'])) {	// 根据年级过滤，一般在布置作业到年级时有效
+        // 	$wherearr[] = 'e.grade = '.$param['grade'];
+        // }
+        // if(isset($param['district'])) {	// 根据校区过滤，一般在布置作业到年级时有效
+        // 	$wherearr[] = 'e.district = '.$param['district'];
+        // }
+        if(!empty($param['q']))	//按作业标题搜索
+            $wherearr[] = 'e.title like \'%'.$this->db->escape_str($param['q']).'%\'';
+        if(!empty($param['abegindate'])) {	//答题开始时间
+            $wherearr[] = 'a.dateline>='.$param['abegindate'];
+        }
+        if(!empty($param['aenddate'])) {	//答题完成时间
+            $wherearr[] = 'a.dateline<'.$param['aenddate'];
+        }
+        if(!empty($param['ebegindate'])) {	//布置时间从
+            $wherearr[] = 'e.dateline>='.$param['ebegindate'];
+        }
+        if(!empty($param['eenddate'])) {	//布置时间到
+            $wherearr[] = 'e.dateline<'.$param['eenddate'];
+        }
+        if(isset($param['astatus'])) {	// 草稿箱状态，0为答题草稿箱 1为已提交
+            $wherearr[] = 'a.status = '.$param['astatus'];
+        }
+        if(!empty($param['type'])){
+            if(is_numeric($param['type'])){
+                $wherearr[] = 'e.type='.$param['type'];
+            }else if(is_array($param['type'])){
+                $wherearr[] = 'e.type in ('.implode(',',$param['type']).')';
+            }
+        }
+        if (isset($param['folderid']))
+            $wherearr[] = 'e.folderid=' . $param['folderid'];
+        $sql .= ' WHERE '.implode(' AND ',$wherearr);
+        $row = $this->db->query($sql)->row_array();
+        if(!empty($row))
+            $count = $row['count'];
+        return $count;
+    }
 	/**
 	*根据学生编号获取网校学生的作业
 	*/

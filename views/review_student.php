@@ -77,7 +77,7 @@
 <?php ;//$user['uid']; ?>
 <?php ;//print_r($reviewlist);?>
 <?php if(!empty($reviews)){ ?>
-	<?php foreach($reviews as $review){ 
+	<?php foreach($reviews as $review){
 	//$rev = current($review['review']);
 	?>
 		<?php if(!empty($review['subject'])){ ?>
@@ -111,7 +111,8 @@
 		<?php } ?>
 	<?php } ?>
 <?php }else{ ?>
-	<div style="margin-left:20px;">暂无评论</div>
+    <div style="margin-left:20px;">暂无评论</div>
+    <?//=nocontent()?>
 <?php } ?>
 			<?= $pagestr ?>
 </ul>

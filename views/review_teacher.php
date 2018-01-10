@@ -107,6 +107,7 @@
 	<?php } ?>
 <?php }else{ ?>
 	<div style="margin-left:20px;">暂无回复</div>
+    <?//=nocontent()?>
 <?php } ?>
 <?= $pagestr ?>
 </ul>
