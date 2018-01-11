@@ -1,2 +1,3 @@
 #忽略日志文件
-.logs 
+.logs
+.idea
