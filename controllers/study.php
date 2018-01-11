@@ -259,9 +259,11 @@ class StudyController extends CControl {
 		}
 	
 		
+        $redis = Ebh::app()->getCache('cache_redis');//redis对象
 		if(!empty($cwlist)){
-		
+
 		$cwids = '';
+
 		foreach($cwlist as $cw){
 			$cwids.= $cw['cwid'].',';
 		}
@@ -270,7 +272,7 @@ class StudyController extends CControl {
 		$param['uid'] = $user['uid'];
 		$pmodel = $this->model('progress');
 		$progresslist = $pmodel->getFolderProgressByCwid($param);
-		
+
 		foreach($progresslist as $k=>$p){
 			if($p['percent']*100>=90){
 				$cwprogress[$p['cwid']] = 100;
@@ -295,7 +297,8 @@ class StudyController extends CControl {
 		$myfavorite = empty($myfavorites) ? '' : $myfavorites[0];
 		
 		$sectionlist = array();
-		$redis = Ebh::app()->getCache('cache_redis');
+
+
         foreach($cwlist as $k=>$course) {
             if(empty($course['sid'])) {
                 $course['sid'] = 0;
@@ -599,194 +602,191 @@ class StudyController extends CControl {
 	/*
 	课件列表
 	*/
-	public function cwlist_view(){
-		$roominfo = Ebh::app()->room->getcurroom();
-		$user = Ebh::app()->user->getloginuser();
-		$folderid = $this->uri->itemid;
-		$coursemodel = $this->model('Courseware');
-        $queryarr = parsequery();
-		$q = $this->input->get('q');
-		$page = $this->uri->page;//当前页码
-        $page = intval($page);
+	public function cwlist_view()
+    {
+        $roominfo             = Ebh::app()->room->getcurroom();
+        $user                 = Ebh::app()->user->getloginuser();
+        $folderid             = $this->uri->itemid;
+        $coursemodel          = $this->model('Courseware');
+        $queryarr             = parsequery();
+        $q                    = $this->input->get('q');
+        $page                 = $this->uri->page;//当前页码
+        $page                 = intval($page);
         $queryarr['folderid'] = $folderid;
-		$pagesize = 100;
-		$queryarr['pagesize'] = $pagesize;
+        $pagesize             = 100;
+        $queryarr['pagesize'] = $pagesize;
 
-		$queryarr['page'] = $page;
+        $queryarr['page'] = $page;
 
-		$queryarr['status'] = 1;
-		
-		$foldermodel = $this->model('folder');
-		$folder = $foldermodel->getfolderbyid($folderid);
-		$this->assign('folder',$folder);
+        $queryarr['status'] = 1;
 
-		if(empty($folder['playmode']) || empty($queryarr['q'])){
-			$cwlist = $coursemodel->getfolderseccourselist($queryarr);
-		}
-		else{
-			$searchedcwlist = $coursemodel->getfolderseccourselist($queryarr);
-			unset($queryarr['q']);
-			$cwlist = $coursemodel->getfolderseccourselist($queryarr);
-		}
-	
-		if(!empty($cwlist)){
+        $foldermodel = $this->model('folder');
+        $folder      = $foldermodel->getfolderbyid($folderid);
+        $this->assign('folder', $folder);
 
-		if(isset($cwlist['page'])){
-		    $page = $cwlist['page'];
-		    $showPage = show_page($page['total'],$page['listRows']);
-		    $this->assign('page',$showPage);
-		    unset($cwlist['page']);
+        if (empty($folder['playmode']) || empty($queryarr['q'])) {
+            $cwlist = $coursemodel->getfolderseccourselist($queryarr);
+        } else {
+            $searchedcwlist = $coursemodel->getfolderseccourselist($queryarr);
+            unset($queryarr['q']);
+            $cwlist = $coursemodel->getfolderseccourselist($queryarr);
         }
-		$cwids = '';
-		foreach($cwlist as $cw){
-			$cwids.= $cw['cwid'].',';
-		}
-		$cwids = rtrim($cwids,',');
-		$param['cwid'] = $cwids;
-		$param['uid'] = $user['uid'];
-		$pmodel = $this->model('progress');
-		$progresslist = $pmodel->getFolderProgressByCwid($param);
-		
-		foreach($progresslist as $k=>$p){
-			if($p['percent']*100>=90){
-				$cwprogress[$p['cwid']] = 100;
-			}
-			else{
-				$cwprogress[$p['cwid']] = floor($p['percent']*100);
-			}
-		}
-		$this->insertStudyInfo($cwlist);
-		foreach($cwlist as $k=>$cw){
-			if(!empty($cwprogress[$cw['cwid']]))
-				$cwlist[$k]['percent'] = $cwprogress[$cw['cwid']];
-			else
-				$cwlist[$k]['percent'] = 0;
-		}
-		// var_dump($cwlist);
-		}
-		
-		
-		$sectionlist = array();
-		$redis = Ebh::app()->getCache('cache_redis');
-        foreach($cwlist as $k=>$course) {
-            if(empty($course['sid'])) {
-                $course['sid'] = 0;
-                $course['sname'] = '其他';
+
+        if (!empty($cwlist)) {
+
+            if (isset($cwlist['page'])) {
+                $page     = $cwlist['page'];
+                $showPage = show_page($page['total'], $page['listRows']);
+                $this->assign('page', $showPage);
+                unset($cwlist['page']);
             }
-			if(($k-1)>=0 && $cwlist[$k-1]['sid'] == $course['sid']){
-				if($cwlist[$k-1]['percent'] != 100 || !empty($cwlist[$k-1]['disabled'])){
-					$cwlist[$k]['disabled'] = true;
-					$course['disabled'] = true;
-				}
-				
-			}
-			$viewnum = $redis->hget('coursewareviewnum',$course['cwid']);
-			if(!empty($viewnum))
-				$course['viewnum'] = $viewnum;
-            $sectionlist[$course['sid']][] = $course;
+            $redis = Ebh::app()->getCache('cache_redis');//redis对象
+            // dd(unserialize($redis->hget(self::courseCacheName,'138818_385098')),1);
+
+            //$cwids = rtrim($cwids,',');
+
+            $cwidArr = array_column($cwlist, 'cwid');
+            $cwids   = implode(',', $cwidArr);
+            if (!empty($cwids)) {
+                $apiServer  = Ebh::app()->getApiServer();//获取apiServer
+                $sdata      = array('uid' => $user['uid'], 'cwids' => $cwids);
+                $courseList = $apiServer->reSetting()->setService('Study.Log.list')->addParams($sdata)->request();//获取课件列表学习信息
+                $cwprogress = [];
+                if (!empty($courseList)) {
+                    foreach ($courseList as $item) {
+                        $cwid = $item['cwid'];
+                        if ($item['ltime'] <= 0 || $item['ctime'] <= 0) {
+                            $percent = 0;
+                        } else {
+                            $percent = $item['ltime'] / $item['ctime'] * 100;
+
+                        }
+                        if ($percent >= 90) {
+                            $cwprogress[$cwid] = 100;
+                        } else {
+                            $cwprogress[$cwid] = floor($percent);
+                        }
+                    }
+                }
+
+                $this->insertStudyInfo($cwlist, $courseList);
+                foreach ($cwlist as $k => $cw) {
+                    if (!empty($cwprogress[$cw['cwid']]))
+                        $cwlist[$k]['percent'] = $cwprogress[$cw['cwid']];
+                    else {
+                        $cwlist[$k]['percent'] = 0;
+                    }
+                }
+            }
+            $sectionlist = array();
+            foreach ($cwlist as $k => $course) {
+                if (empty($course['sid'])) {
+                    $course['sid']   = 0;
+                    $course['sname'] = '其他';
+                }
+                if (($k - 1) >= 0 && $cwlist[$k - 1]['sid'] == $course['sid']) {
+                    if ($cwlist[$k - 1]['percent'] != 100 || !empty($cwlist[$k - 1]['disabled'])) {
+                        $cwlist[$k]['disabled'] = true;
+                        $course['disabled']     = true;
+                    }
+
+                }
+                $viewnum = $redis->hget('coursewareviewnum', $course['cwid']);
+                if (!empty($viewnum))
+                    $course['viewnum'] = $viewnum;
+                $sectionlist[$course['sid']][] = $course;
+            }
+            foreach ($sectionlist as $k => $section) {
+                $queryarr['sid']                    = $k;
+                $sectioncount                       = $coursemodel->getfolderseccoursecount($queryarr);
+                $sectionlist[$k][0]['sectioncount'] = $sectioncount;
+            }
+            if (!empty($q) && $folder['playmode']) {//搜索时按序播放
+                // $lastsid = 0;
+                $resultSection = array();
+                if (!empty($searchedcwlist)) {//搜索结果不为空
+                    foreach ($searchedcwlist as $cw) {
+                        if (!empty($cw['sid']))
+                            $sid = $cw['sid'];
+                        else
+                            $sid = 0;
+                        $resultSection[] = $sid;
+                        if (!isset($lastsid))
+                            $lastsid = $sid;
+                        if ($lastsid != $sid) {
+                            //删除上一个目录末尾多余的数据
+                            for ($i = $sectionj[$lastsid]; $i < $nsectioncount[$lastsid]; $i++) {
+                                unset($sectionlist[$lastsid][$i]);
+                            }
+                            $lastsid = $sid;
+                        }
+                        if (empty($nsectioncount[$sid]))
+                            $nsectioncount[$sid] = count($sectionlist[$sid]);
+                        // var_dump($nsectioncount);
+                        if (empty($sectionj[$sid]))
+                            $sectionj[$sid] = 0;
+
+                        // var_dump($sectionj[$sid]);
+
+                        for ($i = $sectionj[$sid]; $i < $nsectioncount[$sid]; $i++) {
+                            //删除与搜索结果不符的内容
+                            if ($cw['cwid'] != $sectionlist[$sid][$i]['cwid']) {
+                                // echo $sectionlist[$sid][$i]['cwid'];
+                                unset($sectionlist[$sid][$i]);
+                            } else {
+                                $sectionj[$sid] = $i + 1;
+                                break;
+                            }
+                        }
+
+                    }
+
+                    for ($i = $sectionj[$sid]; $i < $nsectioncount[$sid]; $i++) {
+                        unset($sectionlist[$sid][$i]);
+                    }
+                    foreach ($sectionlist as $k => $section) {
+                        if (!in_array($k, $resultSection)) {
+                            unset($sectionlist[$k]);
+                        }
+                    }
+                } else {
+                    $sectionlist = array();
+                }
+                // var_dump($searchedcwlist);
+            }
+            //服务包限制时间,用于判断往期课件
+            $packagelimit = Ebh::app()->getConfig()->load('packagelimit');
+            if (in_array($roominfo['crid'], $packagelimit)) {
+                $pmodel    = $this->model('paypackage');
+                $limitdate = $pmodel->getFirstLimitDate(array('folderid' => $folderid, 'uid' => $user['uid']));
+                $this->assign('limitdate', $limitdate['firstday']);
+            }
+            $this->assign('sectionlist', $sectionlist);
+            $this->assign('q', $q);
+            $this->assign('cwlist', $cwlist);
+            $this->display('cwlist');
         }
-		foreach($sectionlist as $k=>$section){
-			$queryarr['sid'] = $k;
-			$sectioncount = $coursemodel->getfolderseccoursecount($queryarr);
-			$sectionlist[$k][0]['sectioncount'] = $sectioncount;
-		}
-		
-		
-		if(!empty($q) && $folder['playmode']){//搜索时按序播放
-			// $lastsid = 0;
-			$resultSection = array();
-			if(!empty($searchedcwlist)){//搜索结果不为空
-				foreach($searchedcwlist as $cw){
-					if(!empty($cw['sid']))
-						$sid = $cw['sid'];
-					else
-						$sid = 0;
-					$resultSection[] = $sid; 
-					if(!isset($lastsid))
-						$lastsid = $sid;
-					if($lastsid != $sid){
-						//删除上一个目录末尾多余的数据
-						for($i=$sectionj[$lastsid];$i<$nsectioncount[$lastsid];$i++){
-							unset($sectionlist[$lastsid][$i]);
-						}
-						$lastsid = $sid;
-					}
-					if(empty($nsectioncount[$sid]))
-						$nsectioncount[$sid] = count($sectionlist[$sid]);
-					// var_dump($nsectioncount);
-					if(empty($sectionj[$sid]))
-						$sectionj[$sid] = 0;
-					
-					// var_dump($sectionj[$sid]);
-					
-					for($i=$sectionj[$sid];$i<$nsectioncount[$sid];$i++){
-						//删除与搜索结果不符的内容
-						if($cw['cwid'] != $sectionlist[$sid][$i]['cwid']){
-							// echo $sectionlist[$sid][$i]['cwid'];
-							unset($sectionlist[$sid][$i]);
-						}else{
-							$sectionj[$sid] = $i+1;
-							break;
-						}
-					}
-					
-				}
-				
-				for($i=$sectionj[$sid];$i<$nsectioncount[$sid];$i++){
-					unset($sectionlist[$sid][$i]);
-				}
-				foreach($sectionlist as $k=>$section){
-					if(!in_array($k,$resultSection)){
-						unset($sectionlist[$k]);
-					}
-				}
-			}else{
-				$sectionlist = array();
-			}
-			// var_dump($searchedcwlist);
-		}
-		//服务包限制时间,用于判断往期课件
-		$packagelimit = Ebh::app()->getConfig()->load('packagelimit');
-		if(in_array($roominfo['crid'],$packagelimit)){
-			$pmodel = $this->model('paypackage');
-			$limitdate = $pmodel->getFirstLimitDate(array('folderid'=>$folderid,'uid'=>$user['uid']));
-			$this->assign('limitdate',$limitdate['firstday']);
-		}
-		$this->assign('sectionlist',$sectionlist);
-		$this->assign('q',$q);
-		$this->assign('cwlist',$cwlist);
-		$this->display('cwlist');
-	}
+    }
 
 	public function showempty(){
 		echo '<style>body{padding:0;margin:0;}</style><div style="background:#fff;text-align:center;padding:20px 0;"><img src="http://static.ebanhui.com/ebh/tpl/2014/images/zanwujilu.png"></div>';
 	}
 
-	public function insertStudyInfo(&$cwlist){
-		$user = Ebh::app()->user->getloginuser();
-		$cwid_in = array();
+    /**
+     * @describe:
+     * @Author:tzq
+     * @Date:2018/01/
+     * @param $cwlist
+     * @param $cwCacheList 缓存数据
+     */
+	public function insertStudyInfo(&$cwlist,$courList){
 		foreach ($cwlist as &$cw) {
-			$cwid_in[] = $cw['cwid'];
-		}
-		$playlogs = $this->model('playlog')->getStudyInfo($user['uid'],$cwid_in);
-		$playlogs_with_key = array();
-		foreach ($playlogs as $playlog) {
-			$key = 'cw_'.$playlog['cwid'];
-			$playlogs_with_key[$key] = $playlog;
-		}
-		foreach ($cwlist as &$cw) {
-			$key = 'cw_'.$cw['cwid'];
-			$cw['cwlength'] = secondToStr($cw['cwlength']);
-			if(array_key_exists($key,$playlogs_with_key)){
-				$cw['learnsumtime'] = secondToStr($playlogs_with_key[$key]['learnsumtime']);
-				$cw['learncount'] = $playlogs_with_key[$key]['learncount'];
-				$cw['firsttime'] = date('Y-m-d H:i',$playlogs_with_key[$key]['firsttime']);
-			}else{
-				$cw['learnsumtime'] = 0;
-				$cw['learncount'] = 0;
-				$cw['firsttime'] = '无记录';
-			}
-			$cwid_in[] = $cw['cwid'];
+            $cwid               = $cw['cwid'];
+            $cw['cwlength']     = isset($cw['cwlength']) ? $cw['cwlength'] : (isset($courList[$cwid]['ctime']) ? $courList[$cwid]['ctime'] : 0);
+            $cw['cwlength']     = secondToStr($cw['cwlength']);
+            $cw['learnsumtime'] = isset($courList[$cwid]) ? secondToStr($courList[$cwid]['totalltime']) : 0;
+            $cw['learncount']   = isset($courList[$cwid]) ? $courList[$cwid]['playcount'] : 0;
+            $cw['firsttime']    = isset($courList[$cwid]) ? date('Y-m-d H:i', $courList[$cwid]['startdate']) : '无记录';
 		}
 	}
 
