@@ -1136,7 +1136,7 @@ class StudyController extends CControl {
                             if ($schoolType == 2) {
                                 //国土处理方式
                                 $totalltime = isset($currFolder['totalltime']) ? $currFolder['totalltime'] : 0;
-                                if ($totalltime <= 0 || $totalltime <= 0) {
+                                if ($totalltime <= 0 || $cwlength <= 0) {
                                     $percent = 0;
                                 } else {
 
