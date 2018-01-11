@@ -1,5 +1,26 @@
 <?php
+if(!function_exists('dd')){
+    /**
+     * @describe:调试输出
+     * @Author:tzq
+     * @Date:2018/01/02
+     * @param array $data 要输出的数据
+     * @param bool $isExit 是否退出进程
+     */
+    function dd($data,$isExit=false){
 
+        if(is_string($data)){
+            echo $data;
+        }else{
+            $str =  '<div><pre class="">';
+            $str .= print_r($data,true);
+            $str .='</div>';
+            echo $str;
+        }
+
+        if($isExit)exit;
+    }
+}
 /*
  * 通用方法
  */
