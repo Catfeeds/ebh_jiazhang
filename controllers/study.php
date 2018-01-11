@@ -1136,11 +1136,21 @@ class StudyController extends CControl {
                             if ($schoolType == 2) {
                                 //国土处理方式
                                 $totalltime = isset($currFolder['totalltime']) ? $currFolder['totalltime'] : 0;
-                                $percent    = $totalltime / $cwlength * 100;
+                                if ($totalltime <= 0 || $totalltime <= 0) {
+                                    $percent = 0;
+                                } else {
+
+                                    $percent = $totalltime / $cwlength * 100;
+                                }
                             } else {
                                 //非国土的处理方式
-                                $ltime   = isset($currFolder['ltime']) ? $currFolder['ltime'] : 0;
-                                $percent = $ltime / $cwlength * 100;
+                                $ltime = isset($currFolder['ltime']) ? $currFolder['ltime'] : 0;
+                                if ($ltime <= 0 || $cwlength <= 0) {
+                                    $percent = 0;
+                                } else {
+
+                                    $percent = $ltime / $cwlength * 100;
+                                }
 
                             }
 

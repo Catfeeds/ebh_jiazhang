@@ -38,7 +38,19 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="374">
               <caret line="22" column="1" lean-forward="false" selection-start-line="22" selection-start-column="1" selection-end-line="22" selection-end-column="1" />
-              <folding />
+              <folding>
+                <marker date="1515660531388" expanded="true" signature="23219:23341" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="32797:32826" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="32797:32828" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="32835:32846" ph=" 写入版本号 ..." />
+                <marker date="1515660531388" expanded="true" signature="32896:33343" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="32937:33341" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="33018:33336" ph="//..." />
+                <marker date="1515660531388" expanded="true" signature="33630:33800" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="33651:33793" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="33682:33783" ph="..." />
+                <marker date="1515660531388" expanded="true" signature="33846:33924" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -46,10 +58,10 @@
       <file leaf-file-name="study.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/controllers/study.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="156">
-              <caret line="695" column="50" lean-forward="true" selection-start-line="695" selection-start-column="50" selection-end-line="695" selection-end-column="50" />
+            <state relative-caret-position="-881">
+              <caret line="604" column="20" lean-forward="false" selection-start-line="604" selection-start-column="20" selection-end-line="604" selection-end-column="20" />
               <folding>
-                <marker date="1515657185446" expanded="true" signature="28612:28661" ph="..." />
+                <marker date="1515660982231" expanded="true" signature="28612:28661" ph="..." />
               </folding>
             </state>
           </provider>
@@ -212,7 +224,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-1" />
     <option name="width" value="1924" />
     <option name="height" value="1040" />
@@ -355,15 +367,15 @@
       <workItem from="1515374953521" duration="18674000" />
       <workItem from="1515460577993" duration="8082000" />
       <workItem from="1515545664675" duration="12191000" />
-      <workItem from="1515632443031" duration="9998000" />
+      <workItem from="1515632443031" duration="10294000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="146763000" />
+    <option name="totallyTimeSpent" value="147059000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-4" y="-4" width="1928" height="1044" extended-state="7" />
+    <frame x="-4" y="-4" width="1928" height="1044" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1171875" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -961,7 +973,19 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="22" column="1" lean-forward="false" selection-start-line="22" selection-start-column="1" selection-end-line="22" selection-end-column="1" />
-          <folding />
+          <folding>
+            <marker date="1515660531388" expanded="true" signature="23219:23341" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="32797:32826" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="32797:32828" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="32835:32846" ph=" 写入版本号 ..." />
+            <marker date="1515660531388" expanded="true" signature="32896:33343" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="32937:33341" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="33018:33336" ph="//..." />
+            <marker date="1515660531388" expanded="true" signature="33630:33800" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="33651:33793" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="33682:33783" ph="..." />
+            <marker date="1515660531388" expanded="true" signature="33846:33924" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -975,10 +999,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/controllers/study.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="695" column="50" lean-forward="true" selection-start-line="695" selection-start-column="50" selection-end-line="695" selection-end-column="50" />
+        <state relative-caret-position="-881">
+          <caret line="604" column="20" lean-forward="false" selection-start-line="604" selection-start-column="20" selection-end-line="604" selection-end-column="20" />
           <folding>
-            <marker date="1515657185446" expanded="true" signature="28612:28661" ph="..." />
+            <marker date="1515660982231" expanded="true" signature="28612:28661" ph="..." />
           </folding>
         </state>
       </provider>
