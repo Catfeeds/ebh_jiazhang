@@ -59,14 +59,16 @@ class CreditModel extends CModel{
 		if(!empty($param['nuids'])){
 			$where = " c.toid not in (".implode(',',$param['nuids']).")";
 		}
-		$sql = 'select u.uid,u.username,u.realname,u.face,u.sex,u.groupid,c.credit,c.dateline,i.rulename,i.action,i.description,c.detail
+		//取最大时间
+
+		$sql = 'select u.uid,u.username,u.realname,u.face,u.sex,u.groupid,c.credit,max(c.dateline) dateline,i.rulename,i.action,i.description,c.detail
 		from ebh_creditlogs c
 		left join ebh_users u on c.toid = u.uid
 		left join ebh_roomusers ru on ru.uid = u.uid 
 		left join ebh_creditrules i on c.ruleid = i.ruleid
-		where c.dateline=((select max(dateline) from `ebh_creditlogs` where toid = c.toid)) and ru.crid = '.$param['crid'].' and '.$where;
-		$sql.= ' group by c.toid order by c.dateline desc, c.logid desc';
-		
+		where ru.crid = '.$param['crid'].' and '.$where;
+		$sql.= ' group by c.toid order by dateline desc, c.logid desc';
+		//where c.dateline=((select max(dateline) from `ebh_creditlogs` where toid = c.toid)) and ru.crid = '.$param['crid'].' and '.$where;
 		if(!empty($param['limit'])){
 			$sql.= ' limit '.$param['limit'];
 		}else{

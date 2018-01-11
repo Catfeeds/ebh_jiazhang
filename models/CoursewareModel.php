@@ -313,7 +313,40 @@ class CoursewareModel extends CModel {
     public function getfolderseccourselist($queryarr = array()) {
 		if(empty($queryarr['folderid']) && empty($queryarr['crid']))
 			return FALSE;
-        $sql = 'SELECT cw.cwid,cw.uid,u.username,u.realname,u.sex,u.face,cw.title,cw.cwsource,cw.dateline,cw.attachmentnum,cw.examnum,cw.ism3u8,cw.logo,r.isfree,r.cdisplayorder,s.sid,s.sname,cw.cwurl,ifnull(s.displayorder,10000) sdisplayorder,f.foldername,f.folderid,cw.cwurl,cw.summary,cw.viewnum,cw.reviewnum,cw.submitat,cw.endat,cw.cwsize,cw.cwlength,cw.status from ebh_roomcourses r ' .
+		$field  = [
+            'cw.cwid',
+            'cw.uid',
+            'u.realname',
+            'u.sex',
+            'u.face',
+            'cw.title',
+            'cw.cwsource',
+            'cw.title',
+            'cw.dateline',
+            'cw.attachmentnum',
+            'cw.examnum',
+            'cw.ism3u8',
+            'cw.logo',
+            'r.isfree',
+            'r.cdisplayorder',
+            's.sid',
+            's.sname',
+            'cw.cwurl',
+            'ifnull(s.displayorder,10000) sdisplayorder',
+            'f.foldername',
+            'f.folderid',
+            'cw.summary',
+            'cw.viewnum',
+            'cw.reviewnum',
+            'cw.submitat',
+            'cw.endat',
+            'cw.cwsize',
+            'cw.cwlength',
+            'cw.status',
+
+
+        ];
+        $sql = 'SELECT %s from ebh_roomcourses r ' .
                 'JOIN ebh_coursewares cw ON r.cwid = cw.cwid ' .
                 'LEFT JOIN ebh_sections s ON r.sid=s.sid ' .
                 'JOIN ebh_users u on (u.uid = cw.uid) ' .
@@ -349,11 +382,23 @@ class CoursewareModel extends CModel {
 				$page = 1;
 			else
 				$page = $queryarr['page'];
+            array_push($field,'COUNT(*) ebh_num');
+            $total = $this->db->query(sprintf($sql,implode(',',$field)))->row_array();
+            unset($field[array_search('COUNT(*) ebh_num',$field)]);
+            $total = isset($total['ebh_num'])&&$total['ebh_num']>0?$total['ebh_num']:0;
+            $countPage = ceil($total/$queryarr['pagesize']);
 			$pagesize = empty($queryarr['pagesize']) ? 10 : $queryarr['pagesize'];
 			$start = ($page - 1) * $pagesize;
             $sql .= ' limit ' . $start . ',' . $pagesize;
+            $pageArr = ['currPage'=>$page,'listRows'=>$queryarr['pagesize'],'total'=>$total,'countPage'=>$countPage];
         }
-        return $this->db->query($sql)->list_array();
+        $sql  = sprintf($sql,implode(',',$field));
+        $lists =  $this->db->query($sql)->list_array();
+		$lists = $lists?$lists:array();
+        if(isset($pageArr))
+           $lists['page'] = $pageArr;
+
+        return $lists;
     }
 
     public function getfolderseccoursecount($queryarr = array()) {
