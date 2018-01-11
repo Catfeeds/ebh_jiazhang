@@ -3,6 +3,9 @@
 <script type="text/javascript" src="http://static.ebanhui.com/ebh/js/jquery/showmessage/jquery.showmessage.js"></script>
 <link rel="stylesheet" type="text/css" href="http://static.ebanhui.com/ebh/js/jquery/showmessage/css/default/showmessage.css" media="screen">
 <script type="text/javascript" src="http://static.ebanhui.com/ebh/js/jquery.cookie.js"></script>
+<!--layer-->
+<link href="https://cdn.bootcss.com/layer/3.1.0/theme/default/layer.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/layer/3.1.0/layer.js"></script>
 <style>
 .qianming .qianmings{
 	background: none;
@@ -53,6 +56,10 @@
 	width:84px;
 	padding-top:71px;
 }
+    .act{
+        border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.3);height: 89px;width: 84px;padding-top:9px;
+    }
+
 </style>
 
 <div class="wrap">
@@ -118,7 +125,7 @@
                 </div>
                 <div class="clear"></div>
                 <div class="esukang">
-                	<a class="jzhome fl frnew" href="/ghrecord/home.html" target="mainFrame">主页</a>
+                	<a class="jzhome fl frnew act" href="/ghrecord/home.html" target="mainFrame">主页</a>
 					<a class="jzxueji fl frold" href="/study.html" target="mainFrame" id="course">学习记录</a>
 					<a class="jzlishizuo fl frold" href="/college/examv2.html" target="mainFrame" id="course">历史作业</a>
 					<a class="jzdayi fl frold" href="/myask/all.html" target="mainFrame" id="course">答疑</a>
@@ -140,12 +147,16 @@
 </div>
 <script>
 
-var resetmain = function(){
 	var mainFrame = document.getElementById("mainFrame");
+var resetmain = function(){
 	var iframeHeight = Math.min(mainFrame.contentWindow.window.document.documentElement.scrollHeight, mainFrame.contentWindow.window.document.body.scrollHeight)+1;
 	iframeHeight = iframeHeight<700?700:iframeHeight;
 	$(mainFrame).height(iframeHeight);$(mainFrame).width(1002);
+	layer.closeAll();
+
+
 }
+layer.load();
 
 var Func = function(name,func){
 	if(typeof func != "undefined"){
@@ -286,6 +297,19 @@ $(function(){
 				}
 			}
 	});
+
+	//菜单点击
+    $(document).on('click','.esukang a',function () {
+        layer.load();
+        var This = this;
+        $('.esukang a').each(function () {
+            if(This == this){
+                $(this).addClass('act');
+            }else{
+                $(this).removeClass('act');
+            }
+        })
+    })
 
 });
 </script>

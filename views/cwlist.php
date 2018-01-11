@@ -156,6 +156,9 @@ if($folder['playmode'] == 1 && ($cw['percent'] != 100 || !empty($cw['disabled'])
 
 
 </div>
+<!--分页-->
+<?php if(isset($page)) echo $page;?>
+<!--分页结束-->
 </body>
 <script>
 $(function(){

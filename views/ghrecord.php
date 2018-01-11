@@ -229,11 +229,13 @@ $description .= ' '.'<span class="shocolo">'.$othercredit['action'].$othercredit
 <script language="javascript">
 //ajax获取分页数据
 $(document).on('click', ".listPage a[class!='none']", function() {
+    window.parent.layer.load();
 	var tmparr = $(this).attr('data').split('-');
 	var page = tmparr[1];
 	$.post('/ghrecord/getrankajax.html?r='+Math.random(),{'page':page},function(data){
 		$('#ranklist').html(data.rankliststr)
 		$('.dygry').html(data.pagestr);
+		window.parent.layer.closeAll();
 	},'json');
 });
 getcreditstat();
@@ -314,4 +316,6 @@ function getcreditstat(dp){
 		});
 	});
 }
+//分页样式
+    $('.listPage a').css({'cursor':'pointer'})
 </script>
