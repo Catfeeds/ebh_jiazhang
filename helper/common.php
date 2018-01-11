@@ -699,6 +699,8 @@ function parseEmotion($reviews){
 	$matstr = '/\[emo(\S{1,2})\]/is';
 	$emotioncount = count($emotionarr);
 	$subject = '';
+	if(empty($reviews))
+	    return false;
 	foreach($reviews as $k=>$review){
 		$subject = $review['subject'];
 		preg_match_all($matstr,$subject,$mat);
@@ -1006,8 +1008,7 @@ if(function_exists('formateDate') === false){
                     $retStr = date($format,strtotime($time));
                 }
             }
-        }
-
+        } 
         return $retStr;
     }
 }
