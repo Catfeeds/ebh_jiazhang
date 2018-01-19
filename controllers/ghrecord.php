@@ -54,6 +54,7 @@ class GhrecordController extends CControl{
 		}
 		//排除当前用户，只取前5条记录
 		$newcreditcount = 0;
+        $newcreditlist = array();
 		foreach($myclasscreditlist as $value)
 		{
 			if ($value['uid'] != $user['uid'] && $newcreditcount < 5)
