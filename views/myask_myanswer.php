@@ -85,7 +85,7 @@ if(!empty($folder)){
 						?>                           
 				 		<tr>
 						<td style="border-top:none;">												
-						<div style="float:left;margin-right:15px;"><a href="http://sns.ebh.net/<?=$avalue['uid']?>/main.html" target="_blank"><img title="<?= empty($avalue['realname'])?$avalue['username']:$avalue['realname'] ?>的个人空间" src="<?=$face?>" /></a></div>
+						<div style="float:left;margin-right:15px;"><a href="<?= geturl('myask/'.$avalue['qid']) ?>" target="_blank"><img title="<?= empty($avalue['realname'])?$avalue['username']:$avalue['realname'] ?>" src="<?=$face?>" /></a></div>
 							<div style="float:left;width:860px;font-family:simsun;">
 								<p style="width:750px;word-wrap: break-word;font-size:16px;float:left;line-height:2;">
 								<?php if(!empty($avalue['reward'])){?>

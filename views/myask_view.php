@@ -252,7 +252,7 @@ $face =  empty($ask['face']) ? $defaulturl:$ask['face'];
 $face = getthumb($face,'50_50');
 ?>
 <div class="xiangs" style="margin:0;float:left;width:948px">
-<a href="http://sns.ebh.net/<?=$ask['uid']?>/main.html" target="_blank"><img title="<?= empty($ask['realname'])?$ask['username']:$ask['realname'] ?>的个人空间" src="<?= $face ?>" style="width:50px;height:50px;float:left;"/></a>
+<span ><img title="<?= empty($ask['realname'])?$ask['username']:$ask['realname'] ?>" src="<?= $face ?>" style="width:50px;height:50px;float:left;"/></span>
 <span class="wentit" style="float:left;width:880px;"><?= $ask['title'] ?></span>
 <span style="float:left;"></span>
 <?php
@@ -360,7 +360,7 @@ if (!empty($rewardlist)){
 	<?php } ?>
 
 	<div class="rentuwai">
-    	<a href="http://sns.ebh.net/<?=$answer['uid']?>/main.html" target="_blank"><img title="<?= empty($answer['realname'])?$answer['username']:$answer['realname'] ?>的个人空间" src="<?= $face ?>" style="width:50px;height:50px;border:none;"/></a>
+    	<span ><img title="<?= empty($answer['realname'])?$answer['username']:$answer['realname'] ?>" src="<?= $face ?>" style="width:50px;height:50px;border:none;"/></span>
 	</div>
 	<div class="twoxiang">
 		<span class="huirenw" <?= $answer['groupid']==5?'style="color:red"':''?>><?= empty($answer['realname']) ? $answer['username'] : $answer['realname'] ?><?= $answer['groupid']==5?'<span style="color:red">(老师)</span>':''?></span>

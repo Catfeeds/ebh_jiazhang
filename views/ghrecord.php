@@ -146,7 +146,7 @@ $description .= ' '.'<span class="shocolo">'.$othercredit['action'].$othercredit
 ?>
 <div class="kstjet" <?if($oo == 0){?> style="margin-top:23px;"<? } ?>>
 <p class="stgjudys">
-<a href="http://sns.ebh.net/<?=$othercredit['uid']?>/main.html" target="_blank" class="adtydr"><img class="stgfw" src="<?=getavater($othercredit,'40_40')?>" title="<?= empty($othercredit['realname'])?$othercredit['username']:$othercredit['realname'] ?>的个人空间"/></a>
+<span href="javascript:void(0);" target="_blank" class="adtydr"><img class="stgfw" src="<?=getavater($othercredit,'40_40')?>" title="<?= empty($othercredit['realname'])?$othercredit['username']:$othercredit['realname'] ?>"/></span>
 <?=!empty($othercredit['realname']) ? $othercredit['realname'] : $othercredit['username']?><?=$description?></p>
 </div>
 <?php } ?>
@@ -160,10 +160,10 @@ $description .= ' '.'<span class="shocolo">'.$othercredit['action'].$othercredit
 <ul id="ranklist">
 <?php foreach ($ranklist as $rank){ ?>
 <li class="dtuwrs">
-<a href="http://sns.ebh.net/<?=$rank['uid']?>/main.html" target="_blank" class="destgy">
+<span  target="_blank" class="destgy">
 <span class="egirey"><?=!empty($rank['realname']) ? $rank['realname'] : $rank['username'] ?></span>
-<img src="<?=getavater($rank,'50_50')?>" title="<?= empty($rank['realname'])?$rank['username']:$rank['realname'] ?>的个人空间" />
-</a>
+<img src="<?=getavater($rank,'50_50')?>" title="<?= empty($rank['realname'])?$rank['username']:$rank['realname'] ?>" />
+</span>
 <span class="srusdyt"><?=$rank['credit']?></span>
 <span class="srusdyt"><?=$rank['ranktit']?></span>
 </li>

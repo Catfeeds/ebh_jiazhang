@@ -212,7 +212,7 @@ $description .= ' '.'<span class="shocolo">'.$othercredit['action'].$othercredit
 ?>
 <div class="kstjet" <?if($oo == 0){?> style="margin-top:23px;"<? } ?>>
 <p class="stgjudys">
-<a href="http://sns.ebh.net/<?=$othercredit['uid']?>/main.html" target="_blank" class="adtydr"><img class="stgfw" src="<?=getavater($othercredit,'40_40')?>" title="<?= empty($othercredit['realname'])?$othercredit['username']:$othercredit['realname'] ?>的个人空间"/></a>
+<span class="adtydr"><img class="stgfw" src="<?=getavater($othercredit,'40_40')?>" title="<?= empty($othercredit['realname'])?$othercredit['username']:$othercredit['realname'] ?>"/></span>
 <?=!empty($othercredit['realname']) ? $othercredit['realname'] : $othercredit['username']?><?=$description?></p>
 </div>
 <?php } ?>
