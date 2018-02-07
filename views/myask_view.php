@@ -288,18 +288,23 @@ if(!empty($ask['cwname']))
 </p>
 </div>
 <?php } ?>
-<?php if(!empty($ask['imagesrc'])) { ?>
-<div class="dengtu" style="float:left;width:950px">
+<?php if(!empty($ask['imagesrc'])) {
+        $imgArr = explode(',',$ask['imagesrc']);
+    ?>
+
+<div class="dengtu" style="width:950px">
 	<ul>
+        <?php foreach($imgArr as $imgsrc){?>
 		<li style="width:auto;height:auto;">
 			<div class="bg photo_photolist_inner">
 			<p class="photo_photolist_img" style="width:auto;height:auto;">
-			<a style="display:block;height: 100%;overflow: hidden;" href="<?= $ask['imagesrc'] ?>">
-			<img id="img1" src="<?= getthumb($ask['imagesrc'],'277_195')?>"  style="margin-top: 0px; margin-left: 0px;"/>
+			<a style="display:block;height: 100%;overflow: hidden;" href="<?= $imgsrc ?>">
+			<img id="img1" src="<?= getthumb($imgsrc,'277_195')?>"  style="margin-top: 0px; margin-left: 0px;"/>
 			</a>
 			</p>
 			</div>
 		</li>
+        <?php }?>
 	</ul>
 </div>
 <?php } ?>
