@@ -47,7 +47,7 @@ class Examv2Controller extends CControl {
 		$this->assign('crid',$roominfo['crid']);
 		$this->assign('uid',$user['uid']);
 		$this->assign('room',$roominfo);
-        
+
     }
 
     /**
@@ -116,13 +116,13 @@ class Examv2Controller extends CControl {
 			// }
 		// }
 		// $param['q'] = 'asdasd';
-		
+
 		$param['crid'] = $this->room['crid'];
-		
+
 		//筛选的课程
 		$folderid = $this->input->get('folderid');
-		
-	
+
+
 		if(empty($folderid) && $action != 'hasdo'){//待做，免费，全校免费，开通未过期
 			$folderids = $this->getfolderids();
 			$cwids = $this->getcwids();
@@ -146,7 +146,7 @@ class Examv2Controller extends CControl {
 		}
 		//某个老师布置的作业
 		$param['teacherid'] = $this->input->get('teacherid');
-		
+
 		$url = "/exam/selist";
 		$postRet = $this->do_post($url,$param);
 		//作业列表
@@ -194,7 +194,7 @@ class Examv2Controller extends CControl {
 				}
 			}
 		}
-		
+
 		$pagestr = ajaxpage($postRet->pageInfo->totalElement,$postRet->pageInfo->size,$postRet->pageInfo->number);
 
 		$datas = array(
@@ -217,9 +217,9 @@ class Examv2Controller extends CControl {
 		$param['order'] = 'eid desc';
 		$param['cwids'] = array($cwid);
 		//某个老师布置的作业
-		
+
 		$url = "/exam/selist";
-		
+
 		$postRet = $this->do_post($url,$param);
 		//作业列表
 		$examList = $postRet->examList;
@@ -307,7 +307,7 @@ class Examv2Controller extends CControl {
 		if($postRet->info->dtag == 1){
 			$this->renderJson('10003','作业已删除');
 		}
-			
+
 		$etype = $postRet->info->etype;
 		if($etype == 'TSMART') {
 			$url = '/exam/getsmart/'.$eid;
@@ -323,12 +323,12 @@ class Examv2Controller extends CControl {
 		);
 		$postRet = $this->do_post($url,$param);
 		$exam = $postRet->exam;
-		
+
 		$folderids = $this->getfolderids();
 		$cwids = $this->getcwids();
 		if(!in_array($exam->tid,$folderids) && !in_array($exam->cwid,$cwids) && empty($postRet->userAnswer))
 			$this->renderJson('10003','未开通 '.$exam->relationname.',或者已过期',array(),true);
-		
+
 		// var_dump($postRet);
 
 		//判断是否显示答案
@@ -341,9 +341,9 @@ class Examv2Controller extends CControl {
 			// $qids[] = $value->qid;
 			// $bids[] = $value->dqid;
 		// }
-		
+
 		// array_multisort($qids, SORT_ASC, $bids, SORT_ASC, $postRet->userAnswer->answerQueDetails);
-		
+
 
 		$questionList = $postRet->questionList;
 
@@ -358,7 +358,7 @@ class Examv2Controller extends CControl {
 			}
 
 			$datas['userAnswer'] = $postRet->userAnswer;
-			
+
 		}
 
 		foreach ($questionList as $question) {
@@ -376,21 +376,21 @@ class Examv2Controller extends CControl {
 				unset($blank->isanswer);
 				unset($blank->score);
 			}
-			
+
 			// $question->question->questionid = $question->question->qid;
 			// unset($question->question->qid);
-			
+
 			if($question->question->quetype == 'H'){//主观题
 				$extdata = json_decode($question->question->extdata);
-				
+
 				$question->question->schcwid = $extdata->schcwid;
 			}
 		}
 		$datas['exam'] = $exam;
 		$datas['questionList'] = $questionList;
 
-		
-		
+
+
 		if($exam->examstarttime>SYSTIME)
 			$this->renderJson("1","未到作业开放时间");
 			// echo '未到作业时间';
@@ -419,7 +419,7 @@ class Examv2Controller extends CControl {
 				if($note){
 					if($note['remark']){
 						$remark = $note['remark'];
-						
+
 					}
 					if($note['images'])
 						$images = $note['images'];
@@ -461,7 +461,7 @@ class Examv2Controller extends CControl {
     	$result = $this->model('schestype')->getEstypeList($param);
     	echo json_encode($result);
     }
-	
+
 	public function delupanswer(){
 		$schcourseware = $this->model('Schcourseware');
 		$cwid = $this->input->post('schcwid');
@@ -495,14 +495,14 @@ class Examv2Controller extends CControl {
 			$starttime = $info->examstarttime;
 			$endtime = $info->examendtime;
 			$trueendtime = $endtime + $info->limittime*60;
-			
+
 			if($starttime > SYSTIME || (!empty($endtime) && $trueendtime < SYSTIME) )
 				$this->renderJson("10003","作业未开放或已过期");
 		}else{
 			$this->renderJson("10003","作业不存在");
 		}
-		
-		
+
+
 		$userAnswer = array();
 		$status = $this->input->post('status');
 		if(!is_numeric($status) || !in_array($status,array(0,1))) {
@@ -517,14 +517,14 @@ class Examv2Controller extends CControl {
 		}
 
 		$userAnswer['usedtime'] = $usedtime;
-		
+
 		$userAnswer['uid'] = $this->user['uid'];
 		$data = $this->input->post('ques',false);
-		
+
 		if(empty($data)) {
 			$this->renderJson('100','data不能为空');
 		}
-		
+
 		$schcwidlist = array();
 		foreach($data as $q){
 			// var_dump($q);die;
@@ -551,10 +551,10 @@ class Examv2Controller extends CControl {
 			elseif($q['type'] == 'X' || $q['type'] == 'XWX' || $q['type'] == "XYD" || $q['type'] == 'XTL' || $q['type'] == 'XZH'){//完形
 				// $answer = json_decode(str_replace('&quot;','"',$q['answers']));
 				// foreach($answer as $a){
-					
+
 				// }
-				
-				
+
+
 				$url = '/question/detail/'.$q['qid'];//查看原题,答案等
 				$param = array(
 					'k'=>$this->k,
@@ -594,7 +594,7 @@ class Examv2Controller extends CControl {
 					$schcwidlist[] = $extdata->schcwid;
 					$qidlist[] = $question->datas->question->qid;
 				}
-				
+
 				$answers = array('');
 			}
 			elseif(!empty($q['answers']) && !is_array($q['answers']))//文字题等
@@ -602,13 +602,13 @@ class Examv2Controller extends CControl {
 			else
 				$answers = empty($q['answers'])?array():$q['answers'];
 			// var_dump($schcwidlist);
-			
+
 				// exit;
 			$answermap[$q['qid']] = $answers;//array(0,1);
 		}
 		// exit;
 		// var_dump($answermap);exit;
-		
+
 		//print_r(1221);exit;
 		if(!is_scalar($data)) {
 			$data = json_encode(array('answermap'=>$answermap));
@@ -663,13 +663,13 @@ class Examv2Controller extends CControl {
 												'cwidlist'=>$schcwidlist,
 												'aid'=>$aid,
 												'qidlist'=>$qidlist));
-				
+
 			}
 		}
 	}
 
 	//错题集列表页面
-	
+
 	public function myerrorbook() {
 		$this->display('exam_errorlist');
 	}
@@ -681,7 +681,7 @@ class Examv2Controller extends CControl {
 		$this->assign('folder',$folder);
 		$this->display('college/myexamv2_errorlist');
 	}
-	
+
 	//获取错题集列表
 	public function errlistAjax(){
 		$param = parsequery();
@@ -700,9 +700,9 @@ class Examv2Controller extends CControl {
 
 		$ttype = $this->input->post('ttype');
 		$tid = $this->input->post("tid");
-		
+
 		$param['ttype'] = empty($ttype)?'':$ttype;
-		
+
 		if(is_numeric($tid)) {
 			$param['tid'] = $tid;
 		}
@@ -745,7 +745,7 @@ class Examv2Controller extends CControl {
 		if (!empty($typeHqids)) {
 			$pram['cwids'] = substr($typeHcwids, 0, -1);
 			$cwModel = $this->model('Schcourseware');
-			$pram['limit'] = ' 0,100'; 
+			$pram['limit'] = ' 0,100';
 			$typeh_origins = $cwModel->getcourselist($pram);//获取原题
 			$pram['uid'] = $this->user['uid'];
 			$pram['qids'] = substr($typeHqids, 0, -1);
@@ -760,7 +760,7 @@ class Examv2Controller extends CControl {
 				foreach ($errList as $value) {
 					if ('H' == $value->question->queType) {
 						$extdata = json_decode($value->question->extdata,1);
-						//以下组装主要是为了，前端判断是否是有key，key是获取图片的情况，没有前端就不会src='废弃地址'; 
+						//以下组装主要是为了，前端判断是否是有key，key是获取图片的情况，没有前端就不会src='废弃地址';
 						if (isset($queh_map[$value->question->qid])) {//有答题的情况
 							$value->question->blanks->upanswer = empty($queh_map[$value->question->qid]['upanswer'])?'':$queh_map[$value->question->qid]['upanswer'];
 							$extdata = json_decode($value->question->extdata,1);
@@ -778,7 +778,7 @@ class Examv2Controller extends CControl {
 									$value->question->blanks->type = 0;//普通主观题
 								}
 							}
-							
+
 						} else {
 							$value->question->blanks->upanswer = '';
 							if ($queh_map_cwid[$extdata['schcwid']] == 1) {
@@ -853,7 +853,7 @@ class Examv2Controller extends CControl {
 		$this->assign('user',$this->user);
 		$this->display('analysis_exam');
 	}
-	
+
 	//统计分析
 	public function efenxiAjax() {
 		$url = "/exam/efenxi";
@@ -892,7 +892,7 @@ class Examv2Controller extends CControl {
 		}
 		echo  $this->do_post($url,$data,false);
 	}
-	
+
 	/**
 	 *请求作业分析,错题统计的头部数据
 	 */
@@ -914,7 +914,7 @@ class Examv2Controller extends CControl {
 		$datas['datas']['alluserscount'] = $alluserscount;
 		echo json_encode($datas);
 	}
-	
+
 	/*
 	巩固练习
 	*/
@@ -932,7 +932,7 @@ class Examv2Controller extends CControl {
 		$url = '/exam/getexeinfo/'.$eid;
 		$param['k'] = $this->k;
 		// $param['uid'] = $this->user['uid'];
-		
+
 		// var_dump($param);exit;
 		$exerinfo = $this->do_post($url,$param);
 
@@ -942,24 +942,24 @@ class Examv2Controller extends CControl {
 				if(!isset($typelist[$qtype][$que->path]['allcount']))
 					$typelist[$qtype][$que->path]['allcount'] = 0;
 				$typelist[$qtype][$que->path]['allcount']++;
-				
+
 				if(!isset($typelist[$qtype][$que->path]['rightcount']))
 					$typelist[$qtype][$que->path]['rightcount'] = 0;
 				$typelist[$qtype][$que->path]['rightcount'] += $que->allright;
-				
+
 				$typelist[$qtype][$que->path]['relationname'] = $que->relationname;
 				$typelist[$qtype][$que->path]['chapterstr'] = $que->chapterstr;
 			}
 		}
 		$this->assign('typelist',$typelist);
 		$this->assign('exelist',$exerinfo->exelist);
-		
+
 		$this->assign('examinfo',$postRet->info);
 		// var_dump($exerinfo);
-		
+
 		$this->display('college/exercise_view');
 	}
-	
+
 	/*
 	巩固练习列表
 	*/
@@ -969,25 +969,25 @@ class Examv2Controller extends CControl {
 		$param['k'] = $this->k;
 		// $param['uid'] = $this->user['uid'];
 		// $postRet = $this->do_post($url,$param);
-		
+
 		// echo json_encode($postRet);
-		
+
 	}
 	/*
 	生成巩固练习
 	*/
 	public function generateExercise(){
 		$eid = $this->input->post('eid');
-		
+
 		$param['k'] = $this->k;
 		$param['eid'] = $eid;
 		$param['etype'] = 'EXERCISE';
 		$url = '/exam/texamcount/';
 		$postRet = $this->do_post($url,$param);
 		$curcount = $postRet->count + 1;
-		
-		
-		
+
+
+
 		$url = '/exam/getsmart/'.$eid;
 		$param['esubject'] = '巩固练习卷（'.$curcount.'）';
 		$param['conditionList'] = $this->input->post('conditionlist');
@@ -1002,9 +1002,9 @@ class Examv2Controller extends CControl {
 		$url = '/exam/delexe/'.$eid;
 		$param['k'] = $this->k;
 		$postRet = $this->do_post($url,$param);
-		
+
 		echo json_encode($postRet);
-		
+
 	}
 	/*
 	单卷错题情况
@@ -1021,8 +1021,8 @@ class Examv2Controller extends CControl {
 		$this->assign('exampower', $exampower);
 		$this->display('errorSituation');
 	}
-	
-		
+
+
 	/*
 	 * 学生错题头部信息
 	 */
@@ -1035,7 +1035,7 @@ class Examv2Controller extends CControl {
 			'k'=>$this->k,
 			'eid'=>$eid,
 		);
-		
+
 		//班级
 		$classid = $this->input->post('classid');
 		$classidArr = explode(',', $classid);
@@ -1047,7 +1047,7 @@ class Examv2Controller extends CControl {
 				}
 			}
 		}
-		
+
 		$res = $this->do_post($url,$data,FALSE);
 		$datas = json_decode($res, 1);
 		if (!empty($datas['errCode']) OR empty($datas))
@@ -1066,9 +1066,9 @@ class Examv2Controller extends CControl {
 
 		echo json_encode($datas);
 	}
-	
-	
-	
+
+
+
 
 /*
 	 **把1000,转成A
@@ -1086,7 +1086,7 @@ class Examv2Controller extends CControl {
         }
         return $returnStr;
     }
-	
+
     /**
 	 *分配购买地址
 	 */
@@ -1104,9 +1104,9 @@ class Examv2Controller extends CControl {
 		$url = 'http://'.__SURL__.$uri;
 		$ch = curl_init();
 		$datastr = (json_encode($data));
-		
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
-		curl_setopt($ch, CURLOPT_POST, TRUE); 
+
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_POST, TRUE);
 		curl_setopt($ch, CURLOPT_HEADER, FALSE);
 		curl_setopt($ch, CURLOPT_POSTFIELDS,$datastr);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -1127,7 +1127,7 @@ class Examv2Controller extends CControl {
 		}else {
 			return $ret;
 		}
-	}	
+	}
 
 	/*
 	 **输出提示的信息
@@ -1161,8 +1161,8 @@ class Examv2Controller extends CControl {
             exit;
         }
     }
-	
-	
+
+
 	/*
 	 *解析X类型题目
 	 *$quevalue 教师原题
@@ -1192,7 +1192,7 @@ class Examv2Controller extends CControl {
 	 *解析X类型题目
 	 *$quevalue 教师原题
 	 *$uquevalue 学生答案
-	 *$tag 0 隐藏教师答案 
+	 *$tag 0 隐藏教师答案
 	*/
 	public function parseWordQue(&$quevalue,&$uquevalue,$tag = 0){
 		if(empty($quevalue)){
@@ -1208,7 +1208,7 @@ class Examv2Controller extends CControl {
 				}
 				if(!empty($ans)){
 					$item['u'] = $adatapackage['data'][$itemskey]['detail'][$itemkey]['u'];
-				}	
+				}
 			}
 		}
 		$quevalue['datapackage'] = json_encode($quevalue['datapackage']);
@@ -1356,7 +1356,7 @@ class Examv2Controller extends CControl {
 				}
 			}
 		}
-	
+
 		//构建输出数据
 		$ajaxdata['aid'] = $aid;
 		$ajaxdata['uid'] = $res['datas']['userAnswer']['uid'];
@@ -1379,8 +1379,8 @@ class Examv2Controller extends CControl {
 
 		echo json_encode($ajaxdata);
 	}
-	
-	
+
+
 	/**
 	 *整卷批改上传批阅结果
 	 */
@@ -1410,7 +1410,7 @@ class Examv2Controller extends CControl {
 		if($checkres['datas']['userAnswer']['correctrat'] == 100){//已经批阅
 			$this->renderJson('10003','已经批阅过',array('returnurl'=>'/college/examv2/doneexam/'.$eid.'.html'));
 		}
-		
+
 		$schcwidlist = '';
 		$unsetQuetypes = array('A','B','D','G','Z');//过滤的题型
 		foreach ($correctList['answerqueDetailList'] as $key => &$val) {
@@ -1429,7 +1429,7 @@ class Examv2Controller extends CControl {
 			$noteparam = array(
 				'uid'=>$uid,
 				//'aid' => $aid,
-				'cwids' => $schcwidlist	
+				'cwids' => $schcwidlist
 			);
 			$notelist = $this->model('schcourseware')->getCoursenoteBycwids($noteparam);
 		}
@@ -1461,7 +1461,7 @@ class Examv2Controller extends CControl {
 		$param['userAnswer']['data'] = json_encode($param['userAnswer']['data']);
 		$result = $this->do_post($url, $param, 1);
 
-		//$status = !empty($result->nextAid) ? 1 : 0; 
+		//$status = !empty($result->nextAid) ? 1 : 0;
 		$status = 1;
 		$res = array(
 	    	'status'=>$status,
@@ -1472,9 +1472,9 @@ class Examv2Controller extends CControl {
     	);
 		echo json_encode($res);
 	}
-		
-		
-	
+
+
+
 	/**
 	 * 学生自主批阅接口
 	 */
@@ -1497,12 +1497,12 @@ class Examv2Controller extends CControl {
 		$this->assign('username',$this->user['username']);
 		$this->display('college/onepaper_correct');
 	}
-	
-	
-	
+
+
+
 	/*
 	 * 获取学生未完成的作业数量
-	 * param $tid int 课程id用于其他控制器调用此模块 
+	 * param $tid int 课程id用于其他控制器调用此模块
 	 */
 	public function unfishCount($tid=0) {
 		//开通的课程
@@ -1551,9 +1551,9 @@ class Examv2Controller extends CControl {
         } else {
         	echo $count;
         }
-       
+
 	}
-	
+
 	/*
 	获取有权限的课程：(免费，全校免费，开通未过期忽略),免费的课程也需要开通，所以注释掉了
 	*/
@@ -1562,11 +1562,11 @@ class Examv2Controller extends CControl {
 		$myperparam = array('uid'=>$this->user['uid'],'crid'=>$this->room['crid'],'filterdate'=>1);
 		$myfolderlist = $userpermodel->getUserPayFolderList($myperparam);
 		$folderids = array();
-		
+
 		foreach($myfolderlist as $f){
 			$folderids[]= $f['folderid'];
 		}
-		
+
 		$foldermodel = $this->model('Folder');
 		if ($this->room['isschool'] == 7) {
 			//全校免费课程
@@ -1578,7 +1578,7 @@ class Examv2Controller extends CControl {
 					$folderids[]= $f['folderid'];
 				}
 			}
-			
+
 		} else {//其他类型学校的班级关联课程
 			//班级-课程关联
 			$classmodel = $this->model('Classes');
@@ -1586,11 +1586,11 @@ class Examv2Controller extends CControl {
 			if($this->room['domain'] == 'lcyhg'){//绿城育华 一个学生可以多个班级
 				$needlist = TRUE;
 				$myclass = $classmodel->getClassByUid($this->room['crid'],$this->user['uid'],$needlist);
-				
+
 				$myclassidarr = array_column($myclass,'classid');
 				$myclassid = implode($myclassidarr,',');
 				$classfolders = $classcoursesmodel->getfolderidsbyclassid($myclassid);
-				
+
 			}else{
 				$myclass = $classmodel->getClassByUid($this->room['crid'],$this->user['uid']);
 				$myclassid = empty($myclass['classid']) ? 0 : $myclass['classid'];
@@ -1601,7 +1601,7 @@ class Examv2Controller extends CControl {
 					$folderids[] = $fd['folderid'];
 				}
 			}
-			
+
 			//没有关联的，按老策略，老师的课程
 			if(empty($folderids)){
 				$queryarr = parsequery();
@@ -1626,7 +1626,7 @@ class Examv2Controller extends CControl {
 				}
 			}
 		}
-		
+
 		//免费课程（课程0，服务项0）//免费的课程也需要开通，所以注释掉了
 		/*$freelist = $foldermodel->getPriceZeroList($this->room['crid']);
 		foreach($freelist as $f){
@@ -1634,7 +1634,7 @@ class Examv2Controller extends CControl {
 		}*/
 		return $folderids;
 	}
-	
+
 	/*
 	获取已开通的课件id
 	*/
